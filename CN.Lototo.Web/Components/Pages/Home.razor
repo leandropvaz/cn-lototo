@@ -1,0 +1,178 @@
+﻿@page "/home"
+@using Microsoft.AspNetCore.Authorization
+@using System.Globalization
+@* @attribute [Authorize] *@
+
+@code {
+    private DateTime selectedDate = DateTime.Today;
+    private CultureInfo culturaBR = new CultureInfo("pt-BR");
+
+    // Filtros de busca (baseado no ficheiro FMTZ-316-KI01)
+    private string? TagEquipamento { get; set; }
+    private string? TipoEnergia { get; set; }
+    private string? DescricaoRisco { get; set; }
+    private string? LocalizacaoDispositivo { get; set; }
+
+    // Resultados da busca
+    private List<EquipamentoRiscoViewModel> Resultados { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        // Se quiser, aqui pode carregar uma lista inicial (ex.: todos os registos ou vazio)
+    }
+
+    private Task BuscarAsync()
+    {
+        // TODO: Chamar serviço / API / repositório que lê do ficheiro ou BD
+        // Exemplo de mock só para ver o layout a funcionar:
+        Resultados = new List<EquipamentoRiscoViewModel>
+        {
+            new()
+            {
+                TagEquipamento = "TAG-001",
+                TipoEnergia = "Elétrica",
+                DescricaoRisco = "Acionamento inadvertido do supressor",
+                LocalizacaoDispositivo = "Painel 01",
+                DispositivoIsolamento = "Disjuntor QD-01"
+            },
+            new()
+            {
+                TagEquipamento = "TAG-002",
+                TipoEnergia = "Pneumática",
+                DescricaoRisco = "Pressão positiva na linha",
+                LocalizacaoDispositivo = "Sala de válvulas",
+                DispositivoIsolamento = "Válvula gaveta VG-10"
+            }
+        };
+
+        return Task.CompletedTask;
+    }
+
+    // ViewModel simples para a tabela
+    private class EquipamentoRiscoViewModel
+    {
+        public string? TagEquipamento { get; set; }
+        public string? TipoEnergia { get; set; }
+        public string? DescricaoRisco { get; set; }
+        public string? LocalizacaoDispositivo { get; set; }
+        public string? DispositivoIsolamento { get; set; }
+    }
+}
+
+<div class="container-fluid py-3">
+
+    <!-- Card de Filtros (motor de busca) -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header">
+                    <strong>Pesquisa de Equipamentos / Energias Perigosas</strong>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="@this" OnValidSubmit="@BuscarAsync">
+                        <div class="row g-3">
+
+                            <!-- Tag Equipamento -->
+                            <div class="col-12 col-md-3">
+                                <label class="form-label">Tag do Equipamento</label>
+                                <InputText class="form-control"
+                                           @bind-Value="TagEquipamento"
+                                           placeholder="Ex.: FMTZ-316-KI01" />
+                            </div>
+
+                            <!-- Tipo de energia perigosa -->
+                            <div class="col-12 col-md-3">
+                                <label class="form-label">Tipo de energia</label>
+                                <InputText class="form-control"
+                                           @bind-Value="TipoEnergia"
+                                           placeholder="Ex.: Elétrica, Pneumática" />
+                            </div>
+
+                            <!-- Descrição do risco -->
+                            <div class="col-12 col-md-3">
+                                <label class="form-label">Descrição do risco</label>
+                                <InputText class="form-control"
+                                           @bind-Value="DescricaoRisco"
+                                           placeholder="Parte da descrição..." />
+                            </div>
+
+                            <!-- Localização do dispositivo -->
+                            <div class="col-12 col-md-3">
+                                <label class="form-label">Localização do dispositivo</label>
+                                <InputText class="form-control"
+                                           @bind-Value="LocalizacaoDispositivo"
+                                           placeholder="Ex.: Painel, Sala, Área" />
+                            </div>
+
+                            <!-- Botão Buscar -->
+                            <div class="col-12 col-md-2 mt-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </EditForm>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card de Resultados -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>Resultados</strong>
+                    <small class="text-muted">
+                        @if (Resultados?.Any() == true)
+                        {
+                            @($"{Resultados.Count} registo(s) encontrado(s)")
+                        }
+                        else
+                        {
+                            @("Nenhum registo encontrado")
+                        }
+                    </small>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tag Equipamento</th>
+                                <th>Tipo de energia</th>
+                                <th>Descrição do risco</th>
+                                <th>Localização dispositivo</th>
+                                <th>Dispositivo de isolamento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Resultados?.Any() == true)
+                            {
+                                @foreach (var item in Resultados)
+                                {
+                                    <tr>
+                                        <td>@item.TagEquipamento</td>
+                                        <td>@item.TipoEnergia</td>
+                                        <td>@item.DescricaoRisco</td>
+                                        <td>@item.LocalizacaoDispositivo</td>
+                                        <td>@item.DispositivoIsolamento</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-3">
+                                        Nenhum registo para os filtros informados.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,79 @@
+﻿@page "/"
+@using CN.Lototo.Client.Services
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject AuthService AuthService
+@layout EmptyLayout
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="row w-100 justify-content-center">
+        <div class="col-12 col-sm-8 col-md-4">
+            <div class="card shadow-lg p-4 text-center" style="background-color: #ede8e2; border-radius: 16px;">
+
+                <!-- Logo -->
+                <img src="/images/CN.png" alt="Cimento Nacional"
+                     class="mb-4 d-block mx-auto" style="max-width: 250px; height: auto;" />
+
+                <!-- Formulário de Login -->
+                <EditForm Model="@this" OnValidSubmit="@LoginAsync" class="w-100">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger mb-3" />
+
+                    <!-- Campo Login -->
+                    <div class="mb-3 text-start">
+                        <label for="login" class="form-label">Login</label>
+                        <InputText id="login" @bind-Value="login" class="form-control" />
+                    </div>
+
+                    <!-- Campo Senha -->
+                    <div class="mb-3 text-start">
+                        <label for="senha" class="form-label">Senha</label>
+                        <InputText id="senha" type="password" @bind-Value="senha" class="form-control" />
+                    </div>
+
+                    <!-- Campo Planta (ComboBox) -->
+                    <div class="mb-4 text-start">
+                        <label for="planta" class="form-label">Planta</label>
+                        <InputSelect id="planta" @bind-Value="planta" class="form-control">
+                            <option value="">Selecione...</option>
+                            <option value="Usina 1">Matozinhos</option>
+                            <option value="Usina 2">Sete Lagoas</option>
+                        </InputSelect>
+                    </div>
+
+                    <!-- Botão Entrar -->
+                    <button type="submit" class="btn btn-primary w-100">
+                        Entrar
+                    </button>
+                </EditForm>
+
+                <!-- Mensagem de erro -->
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-warning mt-3">@errorMessage</div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private string login = string.Empty;
+    private string senha = string.Empty;
+    private string planta = string.Empty;
+    private string errorMessage = string.Empty;
+
+    private async Task LoginAsync()
+    {
+        // var success = await AuthService.LoginAsync(login, senha);
+        // if (!success)
+        // {
+        //     errorMessage = "Credenciais inválidas.";
+        //     return;
+        // }
+
+        Nav.NavigateTo("/home");
+    }
+}

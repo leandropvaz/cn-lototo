@@ -1,0 +1,1003 @@
+﻿@page "/equipamentos"
+@using System.ComponentModel.DataAnnotations
+@using CN.Lototo.Application.Dto
+@using CN.Lototo.Application.Interfaces
+@inject PlantasService PlantaService
+@inject IEquipamentoAppService EquipamentoAppService
+@inject IJSRuntime Js
+
+@layout MainLayout
+
+<section class="content pt-3">
+    <div class="container-fluid">
+
+        <div class="row">
+
+            @* COLUNA ESQUERDA: WIZARD CADASTRO / IMPORTAÇÃO *@
+            <div class="col-12 col-lg-4">
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-cogs mr-1"></i>
+                            @(IsEditMode ? "Editar Equipamento" : "Cadastro / Importação")
+                        </h3>
+
+                        <div class="card-tools">
+                            <span class="badge badge-info">Passo @passoAtual de 3</span>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+
+                        @* PASSO 1 *@
+                        @if (passoAtual == 1)
+                        {
+                            <div class="form-group">
+                                <label>Planta</label>
+                                <select class="form-control" @onchange="PlantaAlterada">
+                                    <option value="">-- selecione a planta --</option>
+                                    @foreach (var p in Plantas)
+                                    {
+                                        <option value="@p.Id" selected="@(PlantaSelecionadaId == p.Id)">
+                                            @p.Nome (@p.Codigo)
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="form-group mt-3">
+                                <label>Modo de operação</label>
+
+                                <div class="icheck-primary">
+                                    <input type="radio" id="modoManual" name="modoCadastro"
+                                           checked="@(ModoSelecionado == ModoCadastro.Manual)"
+                                           @onchange="() => ModoSelecionado = ModoCadastro.Manual" />
+                                    <label for="modoManual">
+                                        Cadastro manual @(IsEditMode ? "(edição)" : "")
+                                    </label>
+                                </div>
+
+                                <div class="icheck-primary">
+                                    <input type="radio" id="modoImportacao" name="modoCadastro"
+                                           checked="@(ModoSelecionado == ModoCadastro.ImportacaoExcel)"
+                                           @onchange="() => ModoSelecionado = ModoCadastro.ImportacaoExcel" />
+                                    <label for="modoImportacao">
+                                        Importação via Excel (modelo LOTOTO)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <small class="text-muted">
+                                Selecione a planta e escolha se deseja cadastrar manualmente ou importar de um ficheiro Excel.
+                            </small>
+                        }
+                        else if (passoAtual == 2)
+                        {
+                            @* PASSO 2 – MANUAL ou IMPORTAÇÃO *@
+
+                            @if (ModoSelecionado == ModoCadastro.Manual)
+                            {
+                                <EditForm Model="@Manual" OnValidSubmit="SalvarManual">
+                                    <DataAnnotationsValidator />
+                                    <ValidationSummary class="text-danger mb-2" />
+
+                                    @* CABEÇALHO *@
+                                    <div class="card card-outline card-secondary mb-2">
+                                        <div class="card-header py-2">
+                                            <h6 class="card-title mb-0">
+                                                <i class="fas fa-id-badge mr-1"></i>
+                                                Cabeçalho do equipamento
+                                            </h6>
+                                        </div>
+                                        <div class="card-body py-2">
+                                            <div class="form-group">
+                                                <label>Tag do equipamento</label>
+                                                <InputText class="form-control" @bind-Value="Manual.Tag" />
+                                                <ValidationMessage For="@(() => Manual.Tag)" class="text-danger small" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Nome / descrição do equipamento</label>
+                                                <InputText class="form-control" @bind-Value="Manual.EquipmentName" />
+                                                <ValidationMessage For="@(() => Manual.EquipmentName)" class="text-danger small" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Fábrica</label>
+                                                <InputText class="form-control" @bind-Value="Manual.FactoryName" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Data / Revisão</label>
+                                                <InputText class="form-control" @bind-Value="Manual.RevisionInfo" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @* I. IDENTIFICAÇÃO *@
+                                    <div class="card card-outline card-info mb-2">
+                                        <div class="card-header py-2">
+                                            <h6 class="card-title mb-0">
+                                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                                I. Identificação de energia perigosa
+                                            </h6>
+                                        </div>
+                                        <div class="card-body py-2">
+                                            <div class="form-group">
+                                                <label>Nº (linha / risco)</label>
+                                                <InputNumber class="form-control" @bind-Value="Manual.LineNumber" />
+                                                <ValidationMessage For="@(() => Manual.LineNumber)" class="text-danger small" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Tipo de energia perigosa / Magnitude</label>
+                                                <InputText class="form-control" @bind-Value="Manual.EnergyType" />
+                                                <ValidationMessage For="@(() => Manual.EnergyType)" class="text-danger small" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Descrição da energia perigosa</label>
+                                                <InputTextArea class="form-control" rows="3" @bind-Value="Manual.HazardDescription" />
+                                                <ValidationMessage For="@(() => Manual.HazardDescription)" class="text-danger small" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @* II. CONTROLE *@
+                                    <div class="card card-outline card-success mb-2">
+                                        <div class="card-header py-2">
+                                            <h6 class="card-title mb-0">
+                                                <i class="fas fa-lock mr-1"></i>
+                                                II. Controle de energias perigosas
+                                            </h6>
+                                        </div>
+                                        <div class="card-body py-2">
+                                            <div class="form-group">
+                                                <label>TAG dispositivo de isolamento</label>
+                                                <InputText class="form-control" @bind-Value="Manual.IsolationDeviceTag" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Localização dispositivo de isolamento</label>
+                                                <InputText class="form-control" @bind-Value="Manual.IsolationDeviceLocation" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Dispositivo de isolamento</label>
+                                                <InputText class="form-control" @bind-Value="Manual.IsolationDeviceDescription" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Bloqueio</label>
+                                                <InputText class="form-control" @bind-Value="Manual.LockoutType" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @* IMAGEM *@
+                                    <div class="form-group">
+                                        <label>Imagem do equipamento</label>
+                                        <InputFile OnChange="ImagemManualSelecionada" accept="image/*" />
+                                        @if (!string.IsNullOrEmpty(Manual.ImageFileName))
+                                        {
+                                            <small class="form-text text-muted">
+                                                Ficheiro: @Manual.ImageFileName
+                                            </small>
+                                        }
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Notas da imagem (shape/OCR)</label>
+                                        <InputTextArea class="form-control" rows="3" @bind-Value="Manual.ImageNotes" />
+                                    </div>
+
+                                    <button type="submit" class="btn btn-success btn-block">
+                                        <i class="fas fa-save mr-1"></i>
+                                        @(IsEditMode ? "Guardar alterações" : "Salvar equipamento")
+                                    </button>
+                                </EditForm>
+                            }
+                            else
+                            {
+                                @* IMPORTAÇÃO *@
+                                <div class="form-group">
+                                    <label>Selecione um ou mais ficheiros Excel</label>
+                                    <InputFile OnChange="ArquivosExcelSelecionados"
+                                               multiple
+                                               accept=".xlsx"
+                                               disabled="@Importando" />
+                                </div>
+
+                                @if (ArquivosImportacao.Any())
+                                {
+                                    <div class="position-relative">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-striped table-bordered mb-2">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>Ficheiro</th>
+                                                        <th>Estado</th>
+                                                        <th>Progresso</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var a in ArquivosImportacao)
+                                                    {
+                                                        <tr>
+                                                            <td>@a.Nome</td>
+                                                            <td>
+                                                                <span class="@ClasseBadgeStatus(a.Status)">
+                                                                    @a.Status
+                                                                </span>
+                                                            </td>
+                                                            <td style="width: 220px;">
+                                                                <div class="progress progress-xs">
+                                                                    <div class="progress-bar"
+                                                                         role="progressbar"
+                                                                         style="width: @a.Progresso%">
+                                                                    </div>
+                                                                </div>
+                                                                <small>@a.Progresso %</small>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <button class="btn btn-primary btn-block"
+                                                disabled="@Importando"
+                                                @onclick="IniciarImportacao">
+                                            <i class="fas fa-file-import mr-1"></i>
+                                            @(Importando ? "Importando..." : "Iniciar importação")
+                                        </button>
+
+                                        @if (!string.IsNullOrEmpty(MensagemImportacao))
+                                        {
+                                            <p class="mt-2 text-info">@MensagemImportacao</p>
+                                        }
+
+                                        @if (Importando)
+                                        {
+                                            <div class="overlay d-flex justify-content-center align-items-center">
+                                                <i class="fas fa-sync-alt fa-spin fa-2x"></i>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="text-muted">Nenhum ficheiro selecionado.</p>
+                                }
+                            }
+                        }
+                        else if (passoAtual == 3)
+                        {
+                            <p>
+                                Importação/cadastro concluído.
+                                A lista de equipamentos foi atualizada na coluna à direita.
+                            </p>
+                            <p class="text-muted mb-0">
+                                Pode continuar a cadastrar manualmente ou importar novos ficheiros.
+                            </p>
+                        }
+
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-between">
+                        @if (!IsEditMode && passoAtual < 3)
+                        {
+                            <button class="btn btn-secondary btn-sm"
+                                    disabled="@(passoAtual == 1)"
+                                    @onclick="PassoAnterior">
+                                <i class="fas fa-arrow-left mr-1"></i> Anterior
+                            </button>
+
+                            <button class="btn btn-primary btn-sm"
+                                    disabled="@(PlantaSelecionadaId is null or 0)"
+                                    @onclick="ProximoPasso">
+                                Próximo <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary btn-sm ml-auto"
+                                    @onclick="FecharWizard">
+                                Fechar
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @* COLUNA DIREITA – LISTA *@
+            <div class="col-12 col-lg-8">
+                <div class="card card-info card-outline mb-3">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-list mr-1"></i>
+                            Equipamentos cadastrados
+                        </h3>
+
+                        <div class="card-tools">
+                            <div class="input-group input-group-sm" style="width: 260px;">
+                                <input type="text"
+                                       class="form-control float-right"
+                                       placeholder="Tag, nome, energia..."
+                                       @bind="TermoPesquisa"
+                                       @bind:event="oninput" />
+
+                                <div class="input-group-append">
+                                    <button type="button"
+                                            class="btn btn-default"
+                                            title="Limpar"
+                                            @onclick="LimparPesquisa">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-2">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                            <div>
+                                <small class="text-muted">
+                                    @if (EquipamentosFiltrados?.Any() == true)
+                                    {
+                                        @($"{EquipamentosFiltrados.Count} equipamento(s) encontrado(s)")
+                                    }
+                                    else
+                                    {
+                                        @("Nenhum equipamento encontrado")
+                                    }
+                                </small>
+                            </div>
+
+                            <div class="btn-group btn-group-sm">
+                                <select class="form-control form-control-sm"
+                                        style="width: 80px;"
+                                        @bind="TamanhoPagina">
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-sm mb-0 equip-table">
+                                <thead>
+                                    <tr class="thead-light">
+                                        <th colspan="5" class="text-center">I. Identificação</th>
+                                        <th colspan="4" class="text-center">II. Controlo energias</th>
+                                        <th rowspan="2" style="width: 5%;" class="text-center align-middle">Img</th>
+                                        <th rowspan="2" style="width: 5%;" class="text-center align-middle">Ativo</th>
+                                        <th rowspan="2" style="width: 10%;" class="text-right align-middle">Ações</th>
+                                    </tr>
+                                    <tr class="thead-light">
+                                        <th style="width: 8%;">Tag</th>
+                                        <th style="width: 22%;">Equip.</th>
+                                        <th style="width: 6%;">Nº</th>
+                                        <th style="width: 12%;">Tipo energ.</th>
+                                        <th style="width: 18%;">Desc. energ.</th>
+
+                                        <th style="width: 10%;">TAG disp.</th>
+                                        <th style="width: 14%;">Loc. disp.</th>
+                                        <th style="width: 10%;">Disp.</th>
+                                        <th style="width: 8%;">Bloq.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (EquipamentosPaginados.Any())
+                                    {
+                                        @foreach (var e in EquipamentosPaginados)
+                                        {
+                                            <tr class="@(e.IsDeleted ? "table-danger" : "")">
+                                                <td>@e.Tag</td>
+                                                <td>@e.EquipmentName</td>
+                                                <td>@e.LineNumber</td>
+                                                <td>@e.EnergyType</td>
+                                                <td>@e.HazardDescription</td>
+
+                                                <td>@e.IsolationDeviceTag</td>
+                                                <td>@e.IsolationDeviceLocation</td>
+                                                <td>@e.IsolationDeviceDescription</td>
+                                                <td>@e.LockoutType</td>
+
+                                                <td class="text-center">
+                                                    @if (!string.IsNullOrEmpty(e.ImageBlobUrl))
+                                                    {
+                                                        <button class="btn btn-xs btn-outline-secondary"
+                                                                title="Ver imagem e notas"
+                                                                @onclick="() => AbrirModalImagem(e)">
+                                                            <i class="fas fa-image"></i>
+                                                        </button>
+                                                    }
+                                                </td>
+                                                <td class="text-center">
+                                                    @if (!e.IsDeleted)
+                                                    {
+                                                        <span class="badge bg-success">Ativo</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary">Inativo</span>
+                                                    }
+                                                </td>
+                                                <td class="text-right">
+                                                    <button class="btn btn-xs btn-outline-primary mr-1"
+                                                            title="Editar"
+                                                            @onclick="() => IniciarEdicao(e)">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-xs btn-outline-danger"
+                                                            title="Soft delete"
+                                                            @onclick="() => SoftDelete(e)">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="12" class="text-center text-muted py-3">
+                                                Nenhum equipamento encontrado para a planta selecionada.
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card-footer clearfix">
+                        <span class="text-muted">
+                            Página @PaginaAtual de @TotalPaginas
+                        </span>
+
+                        <ul class="pagination pagination-sm m-0 float-right">
+                            <li class="page-item @(PaginaAtual == 1 ? "disabled" : "")">
+                                <button class="page-link" @onclick="PaginaAnterior">«</button>
+                            </li>
+                            @for (int i = 1; i <= TotalPaginas; i++)
+                            {
+                                <li class="page-item @(PaginaAtual == i ? "active" : "")">
+                                    <button class="page-link" @onclick="() => IrParaPagina(i)">@i</button>
+                                </li>
+                            }
+                            <li class="page-item @(PaginaAtual == TotalPaginas ? "disabled" : "")">
+                                <button class="page-link" @onclick="ProximaPagina">»</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        @* MODAL IMAGEM *@
+        @if (MostrarModalImagem)
+        {
+            <div class="modal fade show"
+                 tabindex="-1"
+                 role="dialog"
+                 style="display:block;"
+                 aria-modal="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-pw-blue">
+                            <h5 class="modal-title">
+                                <i class="fas fa-image mr-1"></i>
+                                @ImagemModalTitulo
+                            </h5>
+                            <button type="button"
+                                    class="close"
+                                    aria-label="Close"
+                                    @onclick="FecharModalImagem">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-7 text-center mb-3 mb-md-0">
+                                    @if (!string.IsNullOrEmpty(ImagemModalUrl))
+                                    {
+                                        <img src="@ImagemModalUrl" class="img-fluid" />
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">Imagem não disponível.</p>
+                                    }
+                                </div>
+                                <div class="col-md-5">
+                                    <h6 class="mb-2">
+                                        <i class="fas fa-sticky-note mr-1"></i>
+                                        Notas
+                                    </h6>
+                                    @if (!string.IsNullOrWhiteSpace(ImagemModalNotas))
+                                    {
+                                        <div class="border rounded p-4 bg-warning" style="min-height: 80px;">
+                                            @ImagemModalNotas
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted mb-0">
+                                            Nenhuma nota encontrada para esta imagem.
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    @onclick="FecharModalImagem">
+                                Fechar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-backdrop fade show"></div>
+        }
+
+    </div>
+</section>
+
+<style>
+    /* Tabela de equipamentos (coluna direita) */
+    .equip-table th,
+    .equip-table td {
+        font-size: 0.80rem;
+        padding: 0.25rem 0.45rem;
+    }
+
+    .equip-table thead th {
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+</style>
+
+@code {
+    private enum ModoCadastro
+    {
+        Manual,
+        ImportacaoExcel
+    }
+
+    public class ManualModel
+    {
+        [Required(ErrorMessage = "Tag é obrigatória.")]
+        public string Tag { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Nome / descrição do equipamento é obrigatório.")]
+        public string EquipmentName { get; set; } = string.Empty;
+
+        public string? FactoryName { get; set; }
+        public string? RevisionInfo { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Nº (linha / risco) deve ser maior que zero.")]
+        public int LineNumber { get; set; }
+
+        [Required(ErrorMessage = "Tipo de energia é obrigatório.")]
+        public string EnergyType { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Descrição da energia perigosa é obrigatória.")]
+        public string HazardDescription { get; set; } = string.Empty;
+
+        public string? IsolationDeviceTag { get; set; }
+        public string? IsolationDeviceLocation { get; set; }
+        public string? IsolationDeviceDescription { get; set; }
+        public string? LockoutType { get; set; }
+
+        public string? ImageFileName { get; set; }
+        public string? ImageNotes { get; set; }
+    }
+
+    private class ArquivoImportacaoItem
+    {
+        public IBrowserFile File { get; set; } = default!;
+        public string Nome { get; set; } = string.Empty;
+        public string Status { get; set; } = "Pendente";
+        public int Progresso { get; set; }
+        public string? MensagemErro { get; set; }
+    }
+
+    private int passoAtual = 1;
+    private List<PlantasDto> Plantas = new();
+    private int? PlantaSelecionadaId;
+
+    private ModoCadastro ModoSelecionado = ModoCadastro.ImportacaoExcel;
+
+    private ManualModel Manual = new();
+    private IBrowserFile? ImagemManualFile;
+
+    private bool IsEditMode;
+    private Guid? EquipamentoEmEdicaoId;
+
+    private List<ArquivoImportacaoItem> ArquivosImportacao = new();
+    private bool Importando;
+    private string? MensagemImportacao;
+
+    private List<EquipamentoDto> Equipamentos = new();
+    private bool CarregandoEquipamentos;
+
+    private string TermoPesquisa { get; set; } = string.Empty;
+    private int PaginaAtual { get; set; } = 1;
+    private int TamanhoPagina { get; set; } = 10;
+
+    private bool MostrarModalImagem;
+    private string? ImagemModalUrl;
+    private string? ImagemModalTitulo;
+    private string? ImagemModalNotas;
+
+    private List<EquipamentoDto> EquipamentosFiltrados =>
+        string.IsNullOrWhiteSpace(TermoPesquisa)
+            ? Equipamentos
+            : Equipamentos
+                .Where(e =>
+                    (e.Tag ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
+                    (e.EquipmentName ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
+                    (e.EnergyType ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
+                    (e.HazardDescription ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
+                    (e.IsolationDeviceTag ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
+                    (e.IsolationDeviceLocation ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+    private IEnumerable<EquipamentoDto> EquipamentosPaginados =>
+        EquipamentosFiltrados
+            .Skip((PaginaAtual - 1) * TamanhoPagina)
+            .Take(TamanhoPagina);
+
+    private int TotalPaginas =>
+        EquipamentosFiltrados.Count == 0
+            ? 1
+            : (int)Math.Ceiling(EquipamentosFiltrados.Count / (double)TamanhoPagina);
+
+    protected override async Task OnInitializedAsync()
+    {
+        Plantas = (await PlantaService.ListarAsync()).ToList();
+    }
+
+    private async Task ShowToastSucessoAsync(string mensagem) =>
+        await Js.InvokeVoidAsync("adminlteToasts.show", "success", "Sucesso", mensagem);
+
+    private async Task ShowToastErroAsync(string mensagem) =>
+        await Js.InvokeVoidAsync("adminlteToasts.show", "error", "Erro", mensagem);
+
+    private void PassoAnterior()
+    {
+        if (passoAtual > 1)
+            passoAtual--;
+    }
+
+    private void ProximoPasso()
+    {
+        if (passoAtual == 1 && (PlantaSelecionadaId is null or 0))
+            return;
+
+        if (passoAtual < 3)
+            passoAtual++;
+    }
+
+    private void FecharWizard()
+    {
+        passoAtual = 1;
+        IsEditMode = false;
+        EquipamentoEmEdicaoId = null;
+        Manual = new ManualModel();
+        ImagemManualFile = null;
+        ArquivosImportacao.Clear();
+        MensagemImportacao = null;
+        Importando = false;
+    }
+
+    private async Task PlantaAlterada(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var id))
+        {
+            PlantaSelecionadaId = id;
+            await CarregarEquipamentosAsync();
+        }
+        else
+        {
+            PlantaSelecionadaId = null;
+            Equipamentos.Clear();
+        }
+
+        PaginaAtual = 1;
+    }
+
+    private async Task CarregarEquipamentosAsync()
+    {
+        if (PlantaSelecionadaId is null or 0)
+            return;
+
+        CarregandoEquipamentos = true;
+        try
+        {
+            Equipamentos = (await EquipamentoAppService.GetByPlantAsync(PlantaSelecionadaId.Value)).ToList();
+        }
+        finally
+        {
+            CarregandoEquipamentos = false;
+        }
+    }
+
+    private void ImagemManualSelecionada(InputFileChangeEventArgs e)
+    {
+        ImagemManualFile = e.File;
+        Manual.ImageFileName = ImagemManualFile?.Name;
+    }
+
+    private async Task SalvarManual()
+    {
+        if (PlantaSelecionadaId is null or 0)
+        {
+            await ShowToastErroAsync("Selecione uma planta antes de salvar.");
+            return;
+        }
+
+        try
+        {
+            Stream? imageStream = null;
+            string? fileName = null;
+            string? contentType = null;
+
+            if (ImagemManualFile != null)
+            {
+                imageStream = ImagemManualFile.OpenReadStream(long.MaxValue);
+                fileName = ImagemManualFile.Name;
+                contentType = ImagemManualFile.ContentType;
+            }
+
+            if (IsEditMode && EquipamentoEmEdicaoId.HasValue)
+            {
+                var updateDto = new EquipamentoUpdateDto
+                {
+                    Id = EquipamentoEmEdicaoId.Value,
+                    PlantId = PlantaSelecionadaId.Value,
+                    Tag = Manual.Tag,
+                    EquipmentName = Manual.EquipmentName,
+                    FactoryName = Manual.FactoryName,
+                    RevisionInfo = Manual.RevisionInfo,
+                    LineNumber = Manual.LineNumber,
+                    EnergyType = Manual.EnergyType,
+                    HazardDescription = Manual.HazardDescription,
+                    IsolationDeviceTag = Manual.IsolationDeviceTag,
+                    IsolationDeviceLocation = Manual.IsolationDeviceLocation,
+                    IsolationDeviceDescription = Manual.IsolationDeviceDescription,
+                    LockoutType = Manual.LockoutType,
+                    ImageNotes = Manual.ImageNotes
+                };
+
+                await EquipamentoAppService.UpdateAsync(updateDto);
+
+                if (ImagemManualFile != null)
+                {
+                    await using var imgStream = ImagemManualFile.OpenReadStream(long.MaxValue);
+                    await EquipamentoAppService.UpdateImageAsync(
+                        EquipamentoEmEdicaoId.Value,
+                        imgStream,
+                        ImagemManualFile.Name,
+                        ImagemManualFile.ContentType);
+                }
+            }
+            else
+            {
+                var createDto = new EquipamentoCreateManualRequestDto
+                {
+                    PlantId = PlantaSelecionadaId.Value,
+                    Tag = Manual.Tag,
+                    EquipmentName = Manual.EquipmentName,
+                    FactoryName = Manual.FactoryName,
+                    RevisionInfo = Manual.RevisionInfo,
+                    LineNumber = Manual.LineNumber,
+                    EnergyType = Manual.EnergyType,
+                    HazardDescription = Manual.HazardDescription,
+                    IsolationDeviceTag = Manual.IsolationDeviceTag,
+                    IsolationDeviceLocation = Manual.IsolationDeviceLocation,
+                    IsolationDeviceDescription = Manual.IsolationDeviceDescription,
+                    LockoutType = Manual.LockoutType,
+                    ImageNotes = Manual.ImageNotes
+                };
+
+                await EquipamentoAppService.CreateManualAsync(
+                    createDto,
+                    imageStream,
+                    fileName,
+                    contentType);
+            }
+
+            Manual = new ManualModel();
+            ImagemManualFile = null;
+            IsEditMode = false;
+            EquipamentoEmEdicaoId = null;
+
+            await CarregarEquipamentosAsync();
+            await ShowToastSucessoAsync("Equipamento guardado com sucesso.");
+            passoAtual = 3;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            await ShowToastErroAsync("Ocorreu um erro ao guardar o equipamento.");
+        }
+    }
+
+    private void IniciarEdicao(EquipamentoDto dto)
+    {
+        if (PlantaSelecionadaId is null or 0)
+            PlantaSelecionadaId = dto.PlantId;
+
+        IsEditMode = true;
+        EquipamentoEmEdicaoId = dto.Id;
+        ModoSelecionado = ModoCadastro.Manual;
+        passoAtual = 2;
+
+        Manual = new ManualModel
+        {
+            Tag = dto.Tag,
+            EquipmentName = dto.EquipmentName,
+            FactoryName = dto.FactoryName,
+            RevisionInfo = dto.RevisionInfo,
+            LineNumber = dto.LineNumber,
+            EnergyType = dto.EnergyType,
+            HazardDescription = dto.HazardDescription,
+            IsolationDeviceTag = dto.IsolationDeviceTag,
+            IsolationDeviceLocation = dto.IsolationDeviceLocation,
+            IsolationDeviceDescription = dto.IsolationDeviceDescription,
+            LockoutType = dto.LockoutType,
+            ImageNotes = dto.ImageNotes
+        };
+
+        ImagemManualFile = null;
+        Manual.ImageFileName = null;
+    }
+
+    private void ArquivosExcelSelecionados(InputFileChangeEventArgs e)
+    {
+        ArquivosImportacao.Clear();
+
+        foreach (var file in e.GetMultipleFiles(50))
+        {
+            ArquivosImportacao.Add(new ArquivoImportacaoItem
+            {
+                File = file,
+                Nome = file.Name,
+                Status = "Pendente",
+                Progresso = 0
+            });
+        }
+    }
+
+    private async Task IniciarImportacao()
+    {
+        if (!ArquivosImportacao.Any() || PlantaSelecionadaId is null or 0)
+        {
+            await ShowToastErroAsync("Selecione uma planta e um ficheiro antes de importar.");
+            return;
+        }
+
+        Importando = true;
+        MensagemImportacao = null;
+
+        try
+        {
+            foreach (var a in ArquivosImportacao)
+            {
+                a.Status = "Enviado";
+                a.Progresso = 10;
+
+                await using var browserStream = a.File.OpenReadStream(long.MaxValue);
+                using var ms = new MemoryStream();
+                await browserStream.CopyToAsync(ms);
+                ms.Position = 0;
+
+                var result = await EquipamentoAppService.ImportExcelAsync(
+                    PlantaSelecionadaId.Value,
+                    ms,
+                    a.File.Name,
+                    a.File.ContentType);
+
+                if (result.Success)
+                {
+                    a.Status = "Concluído";
+                    a.Progresso = 100;
+                }
+                else
+                {
+                    a.Status = "Erro";
+                    a.Progresso = 0;
+                    a.MensagemErro = result.ErrorMessage;
+                }
+            }
+
+            MensagemImportacao = "Importação concluída.";
+            await CarregarEquipamentosAsync();
+            await ShowToastSucessoAsync("Equipamentos importados com sucesso.");
+            passoAtual = 3;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            await ShowToastErroAsync("Ocorreu um erro ao importar o(s) ficheiro(s).");
+        }
+        finally
+        {
+            Importando = false;
+        }
+    }
+
+    private string ClasseBadgeStatus(string status) =>
+        status switch
+        {
+            "Pendente" => "badge badge-secondary",
+            "Enviado" => "badge badge-info",
+            "Processando" => "badge badge-warning",
+            "Concluído" => "badge badge-success",
+            "Erro" => "badge badge-danger",
+            _ => "badge badge-light"
+        };
+
+    private async Task SoftDelete(EquipamentoDto dto)
+    {
+        try
+        {
+            await EquipamentoAppService.SoftDeleteAsync(dto.Id);
+            await CarregarEquipamentosAsync();
+            await ShowToastSucessoAsync("Equipamento marcado como inativo.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            await ShowToastErroAsync("Erro ao remover (soft delete) o equipamento.");
+        }
+    }
+
+    private void AbrirModalImagem(EquipamentoDto eq)
+    {
+        ImagemModalUrl = eq.ImageBlobUrl;
+        ImagemModalTitulo = $"{eq.Tag} - {eq.EquipmentName}";
+        ImagemModalNotas = eq.ImageNotes;
+        MostrarModalImagem = true;
+    }
+
+    private void FecharModalImagem()
+    {
+        MostrarModalImagem = false;
+        ImagemModalUrl = null;
+        ImagemModalTitulo = null;
+        ImagemModalNotas = null;
+    }
+
+    private void LimparPesquisa()
+    {
+        TermoPesquisa = string.Empty;
+        PaginaAtual = 1;
+    }
+
+    private void PaginaAnterior()
+    {
+        if (PaginaAtual > 1)
+            PaginaAtual--;
+    }
+
+    private void ProximaPagina()
+    {
+        if (PaginaAtual < TotalPaginas)
+            PaginaAtual++;
+    }
+
+    private void IrParaPagina(int pagina)
+    {
+        if (pagina >= 1 && pagina <= TotalPaginas)
+            PaginaAtual = pagina;
+    }
+}

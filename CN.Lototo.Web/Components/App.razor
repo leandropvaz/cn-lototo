@@ -1,0 +1,44 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using CN.Lototo.Web.Components.Pages
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+
+    <!-- Google Font -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+
+    <!-- AdminLTE CSS -->
+    <link rel="stylesheet" href="AdminLTE/plugins/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="AdminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
+    <link rel="stylesheet" href="AdminLTE/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <link rel="stylesheet" href="AdminLTE/plugins/overlayScrollbars/css/OverlayScrollbars.min.css" />
+    <link rel="stylesheet" href="AdminLTE/dist/css/adminlte.min.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/custom.css" />
+
+    <HeadOutlet />
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+
+    <CascadingAuthenticationState>
+        <!-- AQUI ESTÁ A CORREÇÃO -->
+        <Routes @rendermode="InteractiveServer" />
+    </CascadingAuthenticationState>
+
+    <!-- JS -->
+    <script src="AdminLTE/plugins/jquery/jquery.min.js"></script>
+    <script src="AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="AdminLTE/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+    <script src="AdminLTE/dist/js/adminlte.min.js"></script>
+    <script src="_framework/blazor.web.js"></script>
+    <script src="js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+/* Definição da cor principal customizada */
+:root {
+    --seugarcom: #ede8e2;
+    --seugarcom-dark: #d6d0ca; /* cor mais escura para hover */
+    --seugarcom-light: #f4f2ef; /* cor mais clara para hover ou bg */
+}
+.bg-pw-blue {
+    background-color: #006CB5 !important;
+    color: white !important;
+}
+
+/* Background */
+.bg-seugarcom {
+    background-color: var(--seugarcom) !important;
+    color: #000 !important;
+}
+
+.bg-seugarcom-dark {
+    background-color: var(--seugarcom-dark) !important;
+    color: #000 !important;
+}
+
+/* Texto */
+.text-seugarcom {
+    color: var(--seugarcom) !important;
+}
+
+/* Botões */
+.btn-seugarcom {
+    background-color: var(--seugarcom) !important;
+    color: #000 !important;
+    border-color: var(--seugarcom-dark) !important;
+}
+
+    .btn-seugarcom:hover,
+    .btn-seugarcom:focus,
+    .btn-seugarcom:active {
+        background-color: var(--seugarcom-dark) !important;
+        color: #000 !important;
+        border-color: var(--seugarcom-dark) !important;
+    }
+
+/* Alerts */
+.alert-seugarcom {
+    background-color: var(--seugarcom-light) !important;
+    border-color: var(--seugarcom) !important;
+    color: #000 !important;
+}
+
+/* Badges */
+.badge-seugarcom {
+    background-color: var(--seugarcom) !important;
+    color: #000 !important;
+}
+.main-sidebar.bg-seugarcom {
+    background-color: #ede8e2 !important;
+}
+
+    .main-sidebar.bg-seugarcom .nav-link,
+    .main-sidebar.bg-seugarcom .brand-link {
+        color: #333 !important;
+    }
+
+        .main-sidebar.bg-seugarcom .nav-link.active {
+            background-color: rgba(0,0,0,0.1) !important;
+        }
+/* Sidebar claro */
+.main-sidebar {
+    background-color: #ede8e2 !important;
+    background-image: none !important;
+}
+
+/* Título e ícones do menu */
+.nav-sidebar .nav-link,
+.nav-sidebar .nav-header {
+    color: #2c2c2c !important; /* Preto suave */
+}
+
+    /* Hover */
+    .nav-sidebar .nav-link:hover {
+        background-color: #d6d0c9 !important; /* Um tom mais escuro para hover */
+        color: #000 !important;
+    }
+
+    /* Link ativo */
+    .nav-sidebar .nav-link.active {
+        background-color: #c4bdb5 !important;
+        color: #000 !important;
+    }
+
+    /* Ícones do menu */
+    .nav-sidebar .nav-link i {
+        color: #2c2c2c !important;
+    }
+
+    /* Hover dos ícones */
+    .nav-sidebar .nav-link:hover i {
+        color: #000 !important;
+    }

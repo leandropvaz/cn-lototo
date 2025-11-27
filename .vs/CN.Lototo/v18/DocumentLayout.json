@@ -1,0 +1,212 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Leandro\\Lototo\\Lototo\\Client\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|c:\\leandro\\lototo\\lototo\\client\\cn.lototo.web\\components\\pages\\equipamentosrazor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|solutionrelative:cn.lototo.web\\components\\pages\\equipamentosrazor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|c:\\leandro\\lototo\\lototo\\client\\cn.lototo.web\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|solutionrelative:cn.lototo.web\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A8DB466A-8175-3A51-70FF-287226078EC7}|CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj|c:\\leandro\\lototo\\lototo\\client\\cn.lototo.infrastructure\\data\\configurations\\equipmentoconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A8DB466A-8175-3A51-70FF-287226078EC7}|CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj|solutionrelative:cn.lototo.infrastructure\\data\\configurations\\equipmentoconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A8DB466A-8175-3A51-70FF-287226078EC7}|CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj|c:\\leandro\\lototo\\lototo\\client\\cn.lototo.infrastructure\\storage\\equipmentexcelparser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A8DB466A-8175-3A51-70FF-287226078EC7}|CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj|solutionrelative:cn.lototo.infrastructure\\storage\\equipmentexcelparser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 33,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:134:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:135:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:136:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:137:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:138:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:139:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:140:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:141:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:143:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:142:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:135:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:139:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:142:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:141:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:144:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:143:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:146:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:147:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:145:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:149:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:148:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:134:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainLayout.razor",
+              "DocumentMoniker": "C:\\Leandro\\Lototo\\Lototo\\Client\\CN.Lototo.Web\\Components\\Layout\\MainLayout.razor",
+              "RelativeDocumentMoniker": "CN.Lototo.Web\\Components\\Layout\\MainLayout.razor",
+              "ToolTip": "C:\\Leandro\\Lototo\\Lototo\\Client\\CN.Lototo.Web\\Components\\Layout\\MainLayout.razor",
+              "RelativeToolTip": "CN.Lototo.Web\\Components\\Layout\\MainLayout.razor",
+              "ViewState": "AgIAAEQAAAAAAAAAAAAwwEsAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T00:54:20.754Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "EquipmentoConfiguration.cs",
+              "DocumentMoniker": "C:\\Leandro\\Lototo\\Lototo\\Client\\CN.Lototo.Infrastructure\\Data\\Configurations\\EquipmentoConfiguration.cs",
+              "RelativeDocumentMoniker": "CN.Lototo.Infrastructure\\Data\\Configurations\\EquipmentoConfiguration.cs",
+              "ToolTip": "C:\\Leandro\\Lototo\\Lototo\\Client\\CN.Lototo.Infrastructure\\Data\\Configurations\\EquipmentoConfiguration.cs",
+              "RelativeToolTip": "CN.Lototo.Infrastructure\\Data\\Configurations\\EquipmentoConfiguration.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAEEAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T00:34:34.424Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Equipamentosrazor.razor",
+              "DocumentMoniker": "C:\\Leandro\\Lototo\\Lototo\\Client\\CN.Lototo.Web\\Components\\Pages\\Equipamentosrazor.razor",
+              "RelativeDocumentMoniker": "CN.Lototo.Web\\Components\\Pages\\Equipamentosrazor.razor",
+              "ToolTip": "C:\\Leandro\\Lototo\\Lototo\\Client\\CN.Lototo.Web\\Components\\Pages\\Equipamentosrazor.razor",
+              "RelativeToolTip": "CN.Lototo.Web\\Components\\Pages\\Equipamentosrazor.razor",
+              "ViewState": "AgIAAMoDAAAAAAAAAAAwwOsDAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-25T23:42:43.44Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "EquipmentExcelParser.cs",
+              "DocumentMoniker": "C:\\Leandro\\Lototo\\Lototo\\Client\\CN.Lototo.Infrastructure\\Storage\\EquipmentExcelParser.cs",
+              "RelativeDocumentMoniker": "CN.Lototo.Infrastructure\\Storage\\EquipmentExcelParser.cs",
+              "ToolTip": "C:\\Leandro\\Lototo\\Lototo\\Client\\CN.Lototo.Infrastructure\\Storage\\EquipmentExcelParser.cs",
+              "RelativeToolTip": "CN.Lototo.Infrastructure\\Storage\\EquipmentExcelParser.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-26T23:30:24.192Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

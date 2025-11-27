@@ -1,0 +1,524 @@
+﻿@page "/plantas"
+@using System.ComponentModel.DataAnnotations
+@using CN.Lototo.Application.Dto
+@inject PlantasService PlantaService
+@inject IJSRuntime Js
+@* @attribute [Authorize(Roles = "Administrador,SuperGestor")] *@
+@layout MainLayout
+
+<section class="content pt-3">
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <!-- COLUNA ESQUERDA: FORMULÁRIO CADASTRO/EDIÇÃO -->
+            <div class="col-12 col-lg-4">
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-industry mr-1"></i>
+                            @(IsEditMode ? "Editar Planta" : "Cadastrar Planta")
+                        </h3>
+
+                        @if (IsEditMode)
+                        {
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" title="Cancelar edição" @onclick="CancelarEdicao">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="card-body">
+                        <EditForm Model="@PlantaForm" OnValidSubmit="SalvarPlantaAsync" FormName="PlantaForm">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger mb-2" />
+
+                            <!-- Nome -->
+                            <div class="form-group">
+                                <label>Nome da Planta</label>
+                                <InputText class="form-control" @bind-Value="PlantaForm.Nome" />
+                                <ValidationMessage For="@(() => PlantaForm.Nome)" class="text-danger" />
+                            </div>
+
+                            <!-- Código -->
+                            <div class="form-group">
+                                <label>Código</label>
+                                <InputText class="form-control" @bind-Value="PlantaForm.Codigo" />
+                                <small class="form-text text-muted">Ex.: U01, U02, MATZ, SLAG…</small>
+                                <ValidationMessage For="@(() => PlantaForm.Codigo)" class="text-danger" />
+                            </div>
+
+                            <!-- Localização -->
+                            <div class="form-group">
+                                <label>Localização</label>
+                                <InputText class="form-control" @bind-Value="PlantaForm.Localizacao" />
+                                <ValidationMessage For="@(() => PlantaForm.Localizacao)" class="text-danger" />
+                            </div>
+
+                            <!-- Ativa -->
+                            <div class="form-group">
+                                <div class="icheck-primary d-inline">
+                                    <InputCheckbox id="plantaAtiva" class="form-check-input" @bind-Value="PlantaForm.Ativa" />
+                                    <label for="plantaAtiva">Planta ativa</label>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <button type="submit" class="btn btn-primary">
+                                    @(IsEditMode ? "Guardar alterações" : "Cadastrar")
+                                </button>
+
+                                @if (IsEditMode)
+                                {
+                                    <button type="button" class="btn btn-danger" @onclick="AbrirModalExcluir">
+                                        <i class="fas fa-trash-alt mr-1"></i> Excluir
+                                    </button>
+                                }
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUNA DIREITA: PESQUISA + LISTA PAGINADA -->
+            <div class="col-12 col-lg-8">
+
+                <!-- CARD DE FILTRO / AÇÕES -->
+                <div class="card card-info card-outline mb-3">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-search mr-1"></i>
+                            Pesquisa de Plantas
+                        </h3>
+
+                        <div class="card-tools">
+                            <!-- Pesquisar -->
+                            <div class="input-group input-group-sm" style="width: 260px;">
+                                <input type="text"
+                                       name="table_search"
+                                       class="form-control float-right"
+                                       placeholder="Nome, código ou localização..."
+                                       @bind="TermoPesquisa"
+                                       @bind:event="oninput" />
+
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-default" title="Limpar" @onclick="LimparPesquisa">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-2">
+
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                            <div>
+                                <small class="text-muted">
+                                    @if (PlantasFiltradas?.Any() == true)
+                                    {
+                                        @($"{PlantasFiltradas.Count} planta(s) encontrada(s)")
+                                    }
+                                    else
+                                    {
+                                        @("Nenhuma planta encontrada")
+                                    }
+                                </small>
+                            </div>
+
+                            <div class="btn-group btn-group-sm">
+@*                                 <button type="button" class="btn btn-default" @onclick="ExportarCsvAsync">
+                                    <i class="fas fa-file-csv mr-1"></i> CSV
+                                </button>
+                                <button type="button" class="btn btn-default" @onclick="ExportarExcelAsync">
+                                    <i class="far fa-file-excel mr-1"></i> Excel
+                                </button> *@
+
+                                <select class="form-control form-control-sm ml-2" style="width: 80px;"
+                                        @bind="TamanhoPagina">
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- TABELA (AdminLTE) -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-sm mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th style="width: 15%;">Código</th>
+                                        <th style="width: 30%;">Nome</th>
+                                        <th style="width: 30%;">Localização</th>
+                                        <th style="width: 10%;">Ativa</th>
+                                        <th style="width: 15%;" class="text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (PlantasPaginadas.Any())
+                                    {
+                                        @foreach (var p in PlantasPaginadas)
+                                        {
+                                            <tr>
+                                                <td>@p.Codigo</td>
+                                                <td>@p.Nome</td>
+                                                <td>@p.Localizacao</td>
+                                                <td class="text-center">
+                                                    @if (p.Ativa)
+                                                    {
+                                                        <span class="badge bg-success">Ativa</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary">Inativa</span>
+                                                    }
+                                                </td>
+                                                <td class="text-right">
+                                                    <button class="btn btn-xs btn-outline-primary"
+                                                            title="Editar"
+                                                            @onclick="() => IniciarEdicao(p.Id)">
+                                                        <i class="fas fa-edit"></i> Editar
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted py-3">
+                                                Nenhuma planta encontrada para os filtros informados.
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <!-- Paginação estilo AdminLTE -->
+                    <div class="card-footer clearfix">
+                        <span class="text-muted">
+                            Página @PaginaAtual de @TotalPaginas
+                        </span>
+
+                        <ul class="pagination pagination-sm m-0 float-right">
+                            <li class="page-item @(PaginaAtual == 1 ? "disabled" : "")">
+                                <button class="page-link" @onclick="PaginaAnterior">«</button>
+                            </li>
+
+                            @for (int i = 1; i <= TotalPaginas; i++)
+                            {
+                                <li class="page-item @(PaginaAtual == i ? "active" : "")">
+                                    <button class="page-link" @onclick="() => IrParaPagina(i)">@i</button>
+                                </li>
+                            }
+
+                            <li class="page-item @(PaginaAtual == TotalPaginas ? "disabled" : "")">
+                                <button class="page-link" @onclick="ProximaPagina">»</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        @* MODAL DE CONFIRMAÇÃO DE EXCLUSÃO (AdminLTE / Bootstrap) *@
+        @if (MostrarModalExcluir)
+        {
+            <div class="modal fade show" tabindex="-1" role="dialog" style="display:block;" aria-modal="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger">
+                            <h5 class="modal-title">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                Confirmar exclusão
+                            </h5>
+                            <button type="button" class="close" aria-label="Close" @onclick="FecharModalExcluir">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                Tem certeza que deseja excluir a planta
+                                <strong>@PlantaForm.Nome</strong>?
+                            </p>
+                            <p class="text-muted mb-0">
+                                <small>Esta operação realiza um soft delete (a planta é marcada como inativa).</small>
+                            </p>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="FecharModalExcluir">
+                                <i class="fas fa-times mr-1"></i> Não
+                            </button>
+                            <button type="button" class="btn btn-danger" @onclick="ConfirmarExclusaoAsync">
+                                <i class="fas fa-trash-alt mr-1"></i> Sim, excluir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-backdrop fade show"></div>
+        }
+
+    </div>
+</section>
+
+@code {
+    // ViewModel da tela (UI)
+    public class PlantaViewModel
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "O nome da planta é obrigatório.")]
+        public string Nome { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "O código é obrigatório.")]
+        public string Codigo { get; set; } = string.Empty;
+
+        public string Localizacao { get; set; } = string.Empty;
+
+        public bool Ativa { get; set; } = true;
+    }
+
+    // Formulário atual (cadastro/edição)
+    private PlantaViewModel PlantaForm { get; set; } = new();
+
+    // Lista carregada do banco (via service)
+    private List<PlantaViewModel> TodasAsPlantas { get; set; } = new();
+
+    // Filtro / pesquisa
+    private string TermoPesquisa { get; set; } = string.Empty;
+    private int PaginaAtual { get; set; } = 1;
+    private int TamanhoPagina { get; set; } = 10;
+
+    private bool IsEditMode { get; set; } = false;
+    private int? PlantaEmEdicaoId { get; set; }
+
+    // Modal de exclusão
+    private bool MostrarModalExcluir { get; set; } = false;
+
+    // Listas derivadas
+    private List<PlantaViewModel> PlantasFiltradas =>
+        string.IsNullOrWhiteSpace(TermoPesquisa)
+            ? TodasAsPlantas
+            : TodasAsPlantas
+                .Where(p =>
+                    (p.Nome ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
+                    (p.Codigo ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
+                    (p.Localizacao ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+    private IEnumerable<PlantaViewModel> PlantasPaginadas =>
+        PlantasFiltradas
+            .Skip((PaginaAtual - 1) * TamanhoPagina)
+            .Take(TamanhoPagina);
+
+    private int TotalPaginas =>
+        PlantasFiltradas.Count == 0
+            ? 1
+            : (int)Math.Ceiling(PlantasFiltradas.Count / (double)TamanhoPagina);
+
+    // Carrega do banco na entrada
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarPlantasAsync();
+    }
+
+    private async Task CarregarPlantasAsync()
+    {
+        var dtos = await PlantaService.ListarAsync();
+
+        TodasAsPlantas = dtos
+            .Select(p => new PlantaViewModel
+            {
+                Id = p.Id,
+                Nome = p.Nome,
+                Codigo = p.Codigo,
+                Localizacao = p.Localizacao,
+                Ativa = p.Ativa
+            })
+            .ToList();
+
+        PaginaAtual = 1;
+    }
+
+    // Helpers de toast
+    private async Task ShowToastSucessoAsync(string mensagem)
+    {
+        await Js.InvokeVoidAsync("adminlteToasts.show", "success", "Sucesso", mensagem);
+    }
+
+    private async Task ShowToastErroAsync(string mensagem)
+    {
+        await Js.InvokeVoidAsync("adminlteToasts.show", "error", "Erro", mensagem);
+    }
+
+    // Salvar (insert/update)
+    private async Task SalvarPlantaAsync()
+    {
+        var isEdicao = IsEditMode && PlantaEmEdicaoId.HasValue;
+
+        try
+        {
+            if (isEdicao)
+            {
+                // UPDATE
+                var dto = new PlantasDto
+                {
+                    Id = PlantaEmEdicaoId.Value,
+                    Nome = PlantaForm.Nome,
+                    Codigo = PlantaForm.Codigo,
+                    Localizacao = PlantaForm.Localizacao,
+                    Ativa = PlantaForm.Ativa
+                };
+
+                await PlantaService.AtualizarAsync(dto);
+            }
+            else
+            {
+                // INSERT
+                var dto = new PlantasDto
+                {
+                    Nome = PlantaForm.Nome,
+                    Codigo = PlantaForm.Codigo,
+                    Localizacao = PlantaForm.Localizacao,
+                    Ativa = PlantaForm.Ativa
+                };
+
+                await PlantaService.CriarAsync(dto);
+            }
+
+            // Reset de formulário e estado
+            PlantaForm = new PlantaViewModel();
+            IsEditMode = false;
+            PlantaEmEdicaoId = null;
+
+            await CarregarPlantasAsync();
+
+            await ShowToastSucessoAsync(isEdicao
+                ? "Planta atualizada com sucesso."
+                : "Planta cadastrada com sucesso.");
+        }
+        catch (Exception ex)
+        {
+            await ShowToastErroAsync("Ocorreu um erro ao guardar a planta.");
+            Console.WriteLine(ex);
+        }
+    }
+
+    private void IniciarEdicao(int id)
+    {
+        var planta = TodasAsPlantas.FirstOrDefault(p => p.Id == id);
+        if (planta is null) return;
+
+        IsEditMode = true;
+        PlantaEmEdicaoId = id;
+
+        PlantaForm = new PlantaViewModel
+        {
+            Id = planta.Id,
+            Nome = planta.Nome,
+            Codigo = planta.Codigo,
+            Localizacao = planta.Localizacao,
+            Ativa = planta.Ativa
+        };
+    }
+
+    private void AbrirModalExcluir()
+    {
+        if (!IsEditMode || !PlantaEmEdicaoId.HasValue)
+            return;
+
+        MostrarModalExcluir = true;
+    }
+
+    private void FecharModalExcluir()
+    {
+        MostrarModalExcluir = false;
+    }
+
+    private async Task ConfirmarExclusaoAsync()
+    {
+        if (!IsEditMode || !PlantaEmEdicaoId.HasValue)
+        {
+            MostrarModalExcluir = false;
+            return;
+        }
+
+        try
+        {
+            // Soft delete via service (Ativa = false)
+            await PlantaService.RemoverAsync(PlantaEmEdicaoId.Value);
+
+            PlantaForm = new PlantaViewModel();
+            IsEditMode = false;
+            PlantaEmEdicaoId = null;
+
+            await CarregarPlantasAsync();
+
+            await ShowToastSucessoAsync("Planta excluída com sucesso.");
+        }
+        catch (Exception ex)
+        {
+            await ShowToastErroAsync("Ocorreu um erro ao excluir a planta.");
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            MostrarModalExcluir = false;
+        }
+    }
+
+    private void CancelarEdicao()
+    {
+        IsEditMode = false;
+        PlantaEmEdicaoId = null;
+        PlantaForm = new PlantaViewModel();
+    }
+
+    private void LimparPesquisa()
+    {
+        TermoPesquisa = string.Empty;
+        PaginaAtual = 1;
+    }
+
+    // Paginação
+    private void PaginaAnterior()
+    {
+        if (PaginaAtual > 1)
+            PaginaAtual--;
+    }
+
+    private void ProximaPagina()
+    {
+        if (PaginaAtual < TotalPaginas)
+            PaginaAtual++;
+    }
+
+    private void IrParaPagina(int pagina)
+    {
+        if (pagina >= 1 && pagina <= TotalPaginas)
+            PaginaAtual = pagina;
+    }
+
+    // Exportações – ainda stubs
+    private Task ExportarCsvAsync()
+    {
+        Console.WriteLine("Exportar CSV ainda não implementado.");
+        return Task.CompletedTask;
+    }
+
+    private Task ExportarExcelAsync()
+    {
+        Console.WriteLine("Exportar Excel ainda não implementado.");
+        return Task.CompletedTask;
+    }
+}

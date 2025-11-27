@@ -1,0 +1,97 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using CN.Lototo.Web.Dto
+@using CN.Lototo.Web.Services
+@using CN.Lototo.Application.Dto
+@using CN.Lototo.Application.Services
+@inject NavigationManager Nav
+@inject HttpClient Http
+@inject AuthService AuthService
+@inject PlantasService PlantaService
+@layout EmptyLayout
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="row w-100 justify-content-center">
+        <div class="col-12 col-sm-6 col-md-6">
+            <div class="card shadow-lg p-4" style="background-color: #ede8e2; border-radius: 16px;">
+
+                <!-- Logo -->
+                <img src="/images/CN.png" alt="Cimento Nacional"
+                     class="mb-4 d-block mx-auto" style="max-width: 250px; height: auto;" />
+
+                <!-- Formulário de Login -->
+                <EditForm Model="@vm" OnValidSubmit="LoginAsync" FormName="LoginForm">
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3 text-start">
+                        <label class="form-label">Login</label>
+                        <InputText @bind-Value="vm.Login" class="form-control" />
+                    </div>
+
+                    <div class="mb-3 text-start">
+                        <label class="form-label">Senha</label>
+                        <InputText @bind-Value="vm.Senha" type="password" class="form-control" />
+                    </div>
+
+                    <div class="mb-4 text-start">
+                        <label class="form-label">Planta</label>
+                        <InputSelect @bind-Value="vm.PlantaId" class="form-control">
+                            <option value="">Selecione...</option>
+                            @foreach (var planta in Plantas)
+                            {
+                                <option value="@planta.Id">
+                                    @planta.Nome (@planta.Codigo)
+                                </option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <button class="btn btn-primary w-100">Entrar</button>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-warning mt-3">@errorMessage</div>
+                    }
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginDto vm = new();
+    private string errorMessage = string.Empty;
+
+    private List<PlantasDto> Plantas { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // garante form limpinho ao entrar
+        vm = new LoginDto();
+
+        // carrega TODAS as plantas (sem filtro)
+        var dtos = await PlantaService.ListarAsync();
+        Plantas = dtos.OrderBy(p => p.Nome).ToList();
+    }
+
+    private async Task LoginAsync()
+    {
+        // opcional: valida se escolheu planta
+        if (vm.PlantaId is null || vm.PlantaId == 0)
+        {
+            errorMessage = "Selecione a planta.";
+            return;
+        }
+
+        var success = await AuthService.LoginAsync(vm.Login, vm.Senha);
+
+        if (!success)
+        {
+            errorMessage = "Credenciais inválidas.";
+            return;
+        }
+
+        // Já está autenticado no provider, só navegar
+        Nav.NavigateTo("/home");
+    }
+}

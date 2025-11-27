@@ -1,0 +1,742 @@
+﻿@page "/usuarios"
+@using System.ComponentModel.DataAnnotations
+@using CN.Lototo.Domain.Enums
+@using Microsoft.AspNetCore.Components.Authorization
+@using CN.Lototo.Application.Dto
+@inject UsuariosService UsuarioService
+@inject PlantasService PlantaService
+@inject IJSRuntime Js
+@layout MainLayout
+
+<section class="content pt-3">
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <!-- COLUNA ESQUERDA: FORMULÁRIO CADASTRO/EDIÇÃO -->
+            <div class="col-12 col-lg-4">
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-user mr-1"></i>
+                            @(IsEditMode ? "Editar Usuário" : "Cadastrar Usuário")
+                        </h3>
+
+                        @if (IsEditMode)
+                        {
+                            <div class="card-tools">
+                                <button type="button"
+                                        class="btn btn-tool"
+                                        title="Cancelar edição"
+                                        @onclick="CancelarEdicao">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="card-body">
+                        <EditForm Model="@UsuarioForm" OnValidSubmit="SalvarUsuarioAsync" FormName="UsuarioForm">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger mb-2" />
+
+                            <!-- Login -->
+                            <div class="form-group">
+                                <label>Login</label>
+                                <InputText class="form-control" @bind-Value="UsuarioForm.Login" />
+                                <ValidationMessage For="@(() => UsuarioForm.Login)" class="text-danger" />
+                            </div>
+
+                            <!-- Nome completo -->
+                            <div class="form-group">
+                                <label>Nome completo</label>
+                                <InputText class="form-control" @bind-Value="UsuarioForm.NomeCompleto" />
+                                <ValidationMessage For="@(() => UsuarioForm.NomeCompleto)" class="text-danger" />
+                            </div>
+
+                            <!-- Senha -->
+                            <div class="form-group">
+                                <label>Senha</label>
+                                <InputText class="form-control"
+                                           type="password"
+                                           @bind-Value="UsuarioForm.Senha" />
+                                @if (IsEditMode)
+                                {
+                                    <small class="form-text text-muted">
+                                        Deixe em branco para manter a senha atual.
+                                    </small>
+                                }
+                                <ValidationMessage For="@(() => UsuarioForm.Senha)" class="text-danger" />
+                            </div>
+
+                            <!-- Perfil -->
+                            <div class="form-group">
+                                <label>Perfil de acesso</label>
+                                <InputSelect class="form-control" @bind-Value="UsuarioForm.Perfil">
+                                    @foreach (var value in PerfisDisponiveis)
+                                    {
+                                        <option value="@value">@GetPerfilDescricao(value)</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => UsuarioForm.Perfil)" class="text-danger" />
+                            </div>
+
+                            <!-- Planta (filtrada pelo usuário logado) -->
+                            <div class="form-group">
+                                <label>Planta</label>
+                                <InputSelect class="form-control" @bind-Value="UsuarioForm.PlantaId">
+                                    <option value="">-- Selecionar --</option>
+                                    @foreach (var planta in Plantas)
+                                    {
+                                        <option value="@planta.Id">@planta.Nome (@planta.Codigo)</option>
+                                    }
+                                </InputSelect>
+                                <small class="form-text text-muted">
+                                    Usuários com perfil <strong>Usuário</strong> e
+                                    <strong>Administrador</strong> normalmente ficam associados a uma planta.
+                                </small>
+                            </div>
+
+                            <!-- Ativo -->
+                            <div class="form-group">
+                                <div class="icheck-primary d-inline">
+                                    <InputCheckbox id="usuarioAtivo"
+                                                   class="form-check-input"
+                                                   @bind-Value="UsuarioForm.Ativa" />
+                                    <label for="usuarioAtivo">Usuário ativo</label>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <button type="submit" class="btn btn-primary">
+                                    @(IsEditMode ? "Guardar alterações" : "Cadastrar")
+                                </button>
+
+                                @if (IsEditMode)
+                                {
+                                    <button type="button"
+                                            class="btn btn-danger"
+                                            @onclick="AbrirModalExcluir">
+                                        <i class="fas fa-trash-alt mr-1"></i> Excluir
+                                    </button>
+                                }
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUNA DIREITA: PESQUISA + LISTA PAGINADA -->
+            <div class="col-12 col-lg-8">
+
+                <div class="card card-info card-outline mb-3">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-users mr-1"></i>
+                            Pesquisa de Usuários
+                        </h3>
+
+                        <div class="card-tools">
+                            <!-- Pesquisa -->
+                            <div class="input-group input-group-sm" style="width: 260px;">
+                                <input type="text"
+                                       name="table_search"
+                                       class="form-control float-right"
+                                       placeholder="Login, nome, perfil ou planta..."
+                                       @bind="TermoPesquisa"
+                                       @bind:event="oninput" />
+
+                                <div class="input-group-append">
+                                    <button type="button"
+                                            class="btn btn-default"
+                                            title="Limpar"
+                                            @onclick="LimparPesquisa">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-2">
+
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                            <div>
+                                <small class="text-muted">
+                                    @if (UsuariosFiltrados?.Any() == true)
+                                    {
+                                        @($"{UsuariosFiltrados.Count} usuário(s) encontrado(s)")
+                                    }
+                                    else
+                                    {
+                                        @("Nenhum usuário encontrado")
+                                    }
+                                </small>
+                            </div>
+
+                            <div class="btn-group btn-group-sm">
+ @*                                <button type="button" class="btn btn-default" @onclick="ExportarCsvAsync">
+                                    <i class="fas fa-file-csv mr-1"></i> CSV
+                                </button>
+                                <button type="button" class="btn btn-default" @onclick="ExportarExcelAsync">
+                                    <i class="far fa-file-excel mr-1"></i> Excel
+                                </button> *@
+
+                                <select class="form-control form-control-sm ml-2"
+                                        style="width: 80px;"
+                                        @bind="TamanhoPagina">
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-sm mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th style="width: 15%;">Login</th>
+                                        <th style="width: 25%;">Nome</th>
+                                        <th style="width: 15%;">Perfil</th>
+                                        <th style="width: 25%;">Planta</th>
+                                        <th style="width: 10%;">Ativo</th>
+                                        <th style="width: 10%;" class="text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (UsuariosPaginados.Any())
+                                    {
+                                        @foreach (var u in UsuariosPaginados)
+                                        {
+                                            <tr>
+                                                <td>@u.Login</td>
+                                                <td>@u.NomeCompleto</td>
+                                                <td>@GetPerfilDescricao(u.Perfil)</td>
+                                                <td>@GetNomePlanta(u.PlantaId)</td>
+                                                <td class="text-center">
+                                                    @if (u.Ativa)
+                                                    {
+                                                        <span class="badge bg-success">Ativo</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary">Inativo</span>
+                                                    }
+                                                </td>
+                                                <td class="text-right">
+                                                    <button class="btn btn-xs btn-outline-primary"
+                                                            title="Editar"
+                                                            @onclick="() => IniciarEdicao(u.Id)">
+                                                        <i class="fas fa-edit"></i> Editar
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-3">
+                                                Nenhum usuário encontrado para os filtros informados.
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="card-footer clearfix">
+                        <span class="text-muted">
+                            Página @PaginaAtual de @TotalPaginas
+                        </span>
+
+                        <ul class="pagination pagination-sm m-0 float-right">
+                            <li class="page-item @(PaginaAtual == 1 ? "disabled" : "")">
+                                <button class="page-link" @onclick="PaginaAnterior">«</button>
+                            </li>
+
+                            @for (int i = 1; i <= TotalPaginas; i++)
+                            {
+                                <li class="page-item @(PaginaAtual == i ? "active" : "")">
+                                    <button class="page-link" @onclick="() => IrParaPagina(i)">@i</button>
+                                </li>
+                            }
+
+                            <li class="page-item @(PaginaAtual == TotalPaginas ? "disabled" : "")">
+                                <button class="page-link" @onclick="ProximaPagina">»</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        @* MODAL DE CONFIRMAÇÃO DE EXCLUSÃO *@
+        @if (MostrarModalExcluir)
+        {
+            <div class="modal fade show"
+                 tabindex="-1"
+                 role="dialog"
+                 style="display:block;"
+                 aria-modal="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger">
+                            <h5 class="modal-title">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                Confirmar exclusão
+                            </h5>
+                            <button type="button"
+                                    class="close"
+                                    aria-label="Close"
+                                    @onclick="FecharModalExcluir">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                Tem certeza que deseja excluir o usuário
+                                <strong>@UsuarioForm.Login</strong>?
+                            </p>
+                            <p class="text-muted mb-0">
+                                <small>Esta operação realiza um soft delete (o usuário é marcado como inativo).</small>
+                            </p>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    @onclick="FecharModalExcluir">
+                                <i class="fas fa-times mr-1"></i> Não
+                            </button>
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    @onclick="ConfirmarExclusaoAsync">
+                                <i class="fas fa-trash-alt mr-1"></i> Sim, excluir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-backdrop fade show"></div>
+        }
+
+    </div>
+</section>
+
+@code {
+    public enum PerfilUsuario
+    {
+        Usuario = 1,        // vê e pesquisa equipamentos da própria planta
+        Administrador = 2,  // gerencia usuários e equipamento da planta
+        SuperGestor = 3     // vê todas as plantas e cadastra administradores
+    }
+
+    public class UsuarioViewModel
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "O login é obrigatório.")]
+        public string Login { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "O nome completo é obrigatório.")]
+        public string NomeCompleto { get; set; } = string.Empty;
+
+        [DataType(DataType.Password)]
+        public string? Senha { get; set; }
+
+        [Required(ErrorMessage = "O perfil é obrigatório.")]
+        public PerfilUsuario Perfil { get; set; } = PerfilUsuario.Usuario;
+
+        public bool Ativa { get; set; } = true;
+
+        public int? PlantaId { get; set; }
+    }
+
+    // Dados do usuário logado (claims)
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthStateTask { get; set; } = default!;
+
+    private PerfilUsuario PerfilLogado { get; set; } = PerfilUsuario.Usuario;
+    private int? PlantaIdLogado { get; set; }
+    private int? UsuarioIdLogado { get; set; }
+
+    private UsuarioViewModel UsuarioForm { get; set; } = new();
+
+    private List<UsuarioViewModel> TodosUsuarios { get; set; } = new();
+    private List<PlantasDto> Plantas { get; set; } = new();
+
+    private string TermoPesquisa { get; set; } = string.Empty;
+    private int PaginaAtual { get; set; } = 1;
+    private int TamanhoPagina { get; set; } = 10;
+
+    private bool IsEditMode { get; set; } = false;
+    private int? UsuarioEmEdicaoId { get; set; }
+
+    private bool MostrarModalExcluir { get; set; } = false;
+
+    // Perfis disponíveis conforme perfil logado:
+    // - SuperGestor: todos
+    // - Administrador: Usuario + Administrador
+    // - Usuario: só Usuario
+    private IEnumerable<PerfilUsuario> PerfisDisponiveis =>
+        PerfilLogado switch
+        {
+            PerfilUsuario.SuperGestor => Enum.GetValues(typeof(PerfilUsuario)).Cast<PerfilUsuario>(),
+            PerfilUsuario.Administrador => new[] { PerfilUsuario.Usuario, PerfilUsuario.Administrador },
+            _ => new[] { PerfilUsuario.Usuario }
+        };
+
+    private List<UsuarioViewModel> UsuariosFiltrados =>
+        string.IsNullOrWhiteSpace(TermoPesquisa)
+            ? TodosUsuarios
+            : TodosUsuarios
+                .Where(u =>
+                    (u.Login ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
+                    (u.NomeCompleto ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
+                    GetPerfilDescricao(u.Perfil).Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
+                    (GetNomePlanta(u.PlantaId) ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+    private IEnumerable<UsuarioViewModel> UsuariosPaginados =>
+        UsuariosFiltrados
+            .Skip((PaginaAtual - 1) * TamanhoPagina)
+            .Take(TamanhoPagina);
+
+    private int TotalPaginas =>
+        UsuariosFiltrados.Count == 0
+            ? 1
+            : (int)Math.Ceiling(UsuariosFiltrados.Count / (double)TamanhoPagina);
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Lê perfil e planta do usuário logado
+        var authState = await AuthStateTask;
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            // Ajusta aqui se os nomes das claims forem outros
+            if (int.TryParse(user.FindFirst("Perfil")?.Value, out var perfilInt))
+                PerfilLogado = (PerfilUsuario)perfilInt;
+
+            if (int.TryParse(user.FindFirst("PlantaId")?.Value, out var plantaId))
+                PlantaIdLogado = plantaId;
+
+            if (int.TryParse(user.FindFirst("UserId")?.Value, out var userId))
+                UsuarioIdLogado = userId;
+        }
+
+        await CarregarPlantasAsync();
+        await CarregarUsuariosAsync();
+
+        // garante que ao abrir a tela o form está sempre limpo
+        UsuarioForm = new UsuarioViewModel();
+        IsEditMode = false;
+        UsuarioEmEdicaoId = null;
+    }
+
+    private async Task CarregarPlantasAsync()
+    {
+        var dtos = await PlantaService.ListarAsync();
+
+        if (PerfilLogado == PerfilUsuario.SuperGestor)
+        {
+            // SuperGestor vê todas
+            Plantas = dtos.ToList();
+        }
+        else if (PlantaIdLogado.HasValue)
+        {
+            // Demais perfis: apenas a própria planta
+            Plantas = dtos
+                .Where(p => p.Id == PlantaIdLogado.Value)
+                .ToList();
+        }
+        else
+        {
+            // fallback enquanto ainda não tens claims certinhas: libera todas
+            Plantas = dtos.ToList();
+        }
+    }
+
+    private async Task CarregarUsuariosAsync()
+    {
+        var dtos = await UsuarioService.ListarAsync();
+
+        // Regras de visibilidade da lista:
+
+        if (PerfilLogado == PerfilUsuario.SuperGestor)
+        {
+            // SuperGestor vê todos (nenhum filtro extra)
+        }
+        else if (PerfilLogado == PerfilUsuario.Administrador)
+        {
+            // Administrador só vê USUÁRIOS (não vê SuperGestor, nem outros Admins),
+            // e apenas da sua planta se PlantaIdLogado estiver preenchido.
+            dtos = dtos
+                .Where(u =>
+                    u.Perfil == (int)PerfilUsuario.Usuario &&
+                    (!PlantaIdLogado.HasValue || u.PlantaId == PlantaIdLogado.Value))
+                .ToList();
+        }
+        else // PerfilUsuario.Usuario
+        {
+            // Usuário comum: vê apenas ele próprio (se claim existir)
+            if (UsuarioIdLogado.HasValue)
+            {
+                dtos = dtos
+                    .Where(u => u.Id == UsuarioIdLogado.Value)
+                    .ToList();
+            }
+            else
+            {
+                dtos = new List<UsuariosDto>();
+            }
+        }
+
+        TodosUsuarios = dtos
+            .Select(u => new UsuarioViewModel
+            {
+                Id = u.Id,
+                Login = u.Login,
+                NomeCompleto = u.NomeCompleto,
+                Perfil = (PerfilUsuario)u.Perfil,
+                Ativa = u.Ativa,
+                PlantaId = u.PlantaId
+            })
+            .ToList();
+
+        PaginaAtual = 1;
+    }
+
+    // TOASTS
+    private async Task ShowToastSucessoAsync(string mensagem)
+        => await Js.InvokeVoidAsync("adminlteToasts.show", "success", "Sucesso", mensagem);
+
+    private async Task ShowToastErroAsync(string mensagem)
+        => await Js.InvokeVoidAsync("adminlteToasts.show", "error", "Erro", mensagem);
+
+    // SALVAR (INSERT / UPDATE) com regras de perfil/planta
+    private async Task SalvarUsuarioAsync()
+    {
+        var isEdicao = IsEditMode && UsuarioEmEdicaoId.HasValue;
+
+        // Regra 1: só SuperGestor pode criar/editar SuperGestor
+        if (PerfilLogado != PerfilUsuario.SuperGestor &&
+            UsuarioForm.Perfil == PerfilUsuario.SuperGestor)
+        {
+            await ShowToastErroAsync("Apenas usuários com perfil Super Gestor podem cadastrar ou editar Super Gestores.");
+            return;
+        }
+
+        // Regra 2: Adm/Usuário só podem associar usuários à própria planta
+        // Só aplico a regra se eu realmente souber a planta do logado
+        if (PerfilLogado != PerfilUsuario.SuperGestor && PlantaIdLogado.HasValue)
+        {
+            if (UsuarioForm.PlantaId != PlantaIdLogado.Value)
+            {
+                await ShowToastErroAsync("Você só pode associar usuários à sua própria planta.");
+                return;
+            }
+        }
+
+        try
+        {
+            if (isEdicao)
+            {
+                var dto = new UsuariosDto
+                {
+                    Id = UsuarioEmEdicaoId.Value,
+                    Login = UsuarioForm.Login,
+                    NomeCompleto = UsuarioForm.NomeCompleto,
+                    Perfil = (int)UsuarioForm.Perfil,
+                    Ativa = UsuarioForm.Ativa,
+                    PlantaId = UsuarioForm.PlantaId
+                };
+
+                if (!string.IsNullOrWhiteSpace(UsuarioForm.Senha))
+                    dto.Senha = UsuarioForm.Senha!;
+
+                await UsuarioService.AtualizarAsync(dto);
+            }
+            else
+            {
+                var dto = new UsuariosDto
+                {
+                    Login = UsuarioForm.Login,
+                    NomeCompleto = UsuarioForm.NomeCompleto,
+                    Perfil = (int)UsuarioForm.Perfil,
+                    Ativa = UsuarioForm.Ativa,
+                    PlantaId = UsuarioForm.PlantaId,
+                    Senha = UsuarioForm.Senha ?? string.Empty
+                };
+
+                await UsuarioService.CriarAsync(dto);
+            }
+
+            UsuarioForm = new UsuarioViewModel();
+            IsEditMode = false;
+            UsuarioEmEdicaoId = null;
+
+            await CarregarUsuariosAsync();
+
+            await ShowToastSucessoAsync(isEdicao
+                ? "Usuário atualizado com sucesso."
+                : "Usuário cadastrado com sucesso.");
+        }
+        catch (Exception ex)
+        {
+            await ShowToastErroAsync("Ocorreu um erro ao guardar o usuário.");
+            Console.WriteLine(ex);
+        }
+    }
+
+    private async void IniciarEdicao(int id)
+    {
+        var usuario = TodosUsuarios.FirstOrDefault(u => u.Id == id);
+        if (usuario is null) return;
+
+        // BLOQUEIOS DE EDIÇÃO
+
+        // Admin não pode editar Admin nem SuperGestor
+        if (PerfilLogado == PerfilUsuario.Administrador &&
+            (usuario.Perfil == PerfilUsuario.Administrador ||
+             usuario.Perfil == PerfilUsuario.SuperGestor))
+        {
+            await ShowToastErroAsync("Você não tem permissão para editar este usuário.");
+            return;
+        }
+
+        // Usuário comum só pode editar ele próprio
+        if (PerfilLogado == PerfilUsuario.Usuario &&
+            UsuarioIdLogado.HasValue &&
+            usuario.Id != UsuarioIdLogado.Value)
+        {
+            await ShowToastErroAsync("Você não tem permissão para editar este usuário.");
+            return;
+        }
+
+        IsEditMode = true;
+        UsuarioEmEdicaoId = id;
+
+        UsuarioForm = new UsuarioViewModel
+        {
+            Id = usuario.Id,
+            Login = usuario.Login,
+            NomeCompleto = usuario.NomeCompleto,
+            Perfil = usuario.Perfil,
+            Ativa = usuario.Ativa,
+            PlantaId = usuario.PlantaId,
+            Senha = null
+        };
+    }
+
+    private void AbrirModalExcluir()
+    {
+        if (!IsEditMode || !UsuarioEmEdicaoId.HasValue)
+            return;
+
+        MostrarModalExcluir = true;
+    }
+
+    private void FecharModalExcluir()
+    {
+        MostrarModalExcluir = false;
+    }
+
+    private async Task ConfirmarExclusaoAsync()
+    {
+        if (!IsEditMode || !UsuarioEmEdicaoId.HasValue)
+        {
+            MostrarModalExcluir = false;
+            return;
+        }
+
+        try
+        {
+            await UsuarioService.RemoverAsync(UsuarioEmEdicaoId.Value);
+
+            UsuarioForm = new UsuarioViewModel();
+            IsEditMode = false;
+            UsuarioEmEdicaoId = null;
+
+            await CarregarUsuariosAsync();
+
+            await ShowToastSucessoAsync("Usuário excluído com sucesso.");
+        }
+        catch (Exception ex)
+        {
+            await ShowToastErroAsync("Ocorreu um erro ao excluir o usuário.");
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            MostrarModalExcluir = false;
+        }
+    }
+
+    private void CancelarEdicao()
+    {
+        IsEditMode = false;
+        UsuarioEmEdicaoId = null;
+        UsuarioForm = new UsuarioViewModel();
+    }
+
+    private void LimparPesquisa()
+    {
+        TermoPesquisa = string.Empty;
+        PaginaAtual = 1;
+    }
+
+    private void PaginaAnterior()
+    {
+        if (PaginaAtual > 1)
+            PaginaAtual--;
+    }
+
+    private void ProximaPagina()
+    {
+        if (PaginaAtual < TotalPaginas)
+            PaginaAtual++;
+    }
+
+    private void IrParaPagina(int pagina)
+    {
+        if (pagina >= 1 && pagina <= TotalPaginas)
+            PaginaAtual = pagina;
+    }
+
+    private Task ExportarCsvAsync()
+    {
+        Console.WriteLine("Exportar CSV ainda não implementado.");
+        return Task.CompletedTask;
+    }
+
+    private Task ExportarExcelAsync()
+    {
+        Console.WriteLine("Exportar Excel ainda não implementado.");
+        return Task.CompletedTask;
+    }
+
+    // Helpers
+    private string GetPerfilDescricao(PerfilUsuario perfil) =>
+        perfil switch
+        {
+            PerfilUsuario.Usuario => "Usuário",
+            PerfilUsuario.Administrador => "Administrador",
+            PerfilUsuario.SuperGestor => "Super Gestor",
+            _ => perfil.ToString()
+        };
+
+    private string? GetNomePlanta(int? plantaId)
+    {
+        if (plantaId is null) return null;
+        var p = Plantas.FirstOrDefault(x => x.Id == plantaId.Value);
+        return p is null ? null : $"{p.Nome} ({p.Codigo})";
+    }
+}
