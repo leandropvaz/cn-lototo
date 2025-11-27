@@ -97,3 +97,30 @@
     .nav-sidebar .nav-link:hover i {
         color: #000 !important;
     }
+
+.btn-xxs {
+    padding: 0.05rem 0.25rem !important;
+    font-size: 0.65rem !important;
+    line-height: 1 !important;
+    border-radius: 3px !important;
+}
+
+    .btn-xxs i {
+        font-size: 0.65rem !important;
+    }
+.badge-sm {
+    font-size: 0.6rem !important;
+    padding: 2px 5px !important;
+    border-radius: 4px;
+}
+.radio-small label {
+    font-size: 0.75rem !important; /* texto menor */
+    font-weight: normal !important; /* remove bold */
+    margin-left: 0.25rem !important; /* aproxima do radio */
+}
+.radio-small input[type="radio"] {
+    width: 0.75rem !important;
+    height: 0.75rem !important;
+    transform: scale(0.75); /* encolhe o radio control */
+    margin-top: 0.15rem;
+}

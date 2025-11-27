@@ -129,12 +129,6 @@
                             </div>
 
                             <div class="btn-group btn-group-sm">
-@*                                 <button type="button" class="btn btn-default" @onclick="ExportarCsvAsync">
-                                    <i class="fas fa-file-csv mr-1"></i> CSV
-                                </button>
-                                <button type="button" class="btn btn-default" @onclick="ExportarExcelAsync">
-                                    <i class="far fa-file-excel mr-1"></i> Excel
-                                </button> *@
 
                                 <select class="form-control form-control-sm ml-2" style="width: 80px;"
                                         @bind="TamanhoPagina">
@@ -147,14 +141,14 @@
 
                         <!-- TABELA (AdminLTE) -->
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-sm mb-0">
+                            <table class="table table-bordered table-hover table-sm mb-0 plantas-table">
                                 <thead class="thead-light">
                                     <tr>
                                         <th style="width: 15%;">Código</th>
                                         <th style="width: 30%;">Nome</th>
                                         <th style="width: 30%;">Localização</th>
-                                        <th style="width: 10%;">Ativa</th>
-                                        <th style="width: 15%;" class="text-right">Ações</th>
+                                        <th style="width: 10%;" class="text-center">Ativa</th>
+                                        <th style="width: 15%;" class="text-center">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -169,14 +163,14 @@
                                                 <td class="text-center">
                                                     @if (p.Ativa)
                                                     {
-                                                        <span class="badge bg-success">Ativa</span>
+                                                        <span class="badge bg-success badge-sm">Ativa</span>
                                                     }
                                                     else
                                                     {
-                                                        <span class="badge bg-secondary">Inativa</span>
+                                                        <span class="badge bg-secondary badge-sm">Inativa</span>
                                                     }
                                                 </td>
-                                                <td class="text-right">
+                                                <td class="text-center">
                                                     <button class="btn btn-xs btn-outline-primary"
                                                             title="Editar"
                                                             @onclick="() => IniciarEdicao(p.Id)">
@@ -229,7 +223,7 @@
 
         </div>
 
-        @* MODAL DE CONFIRMAÇÃO DE EXCLUSÃO (AdminLTE / Bootstrap) *@
+        @* MODAL DE CONFIRMAÇÃO DE EXCLUSÃO *@
         @if (MostrarModalExcluir)
         {
             <div class="modal fade show" tabindex="-1" role="dialog" style="display:block;" aria-modal="true">
@@ -249,15 +243,12 @@
                                 Tem certeza que deseja excluir a planta
                                 <strong>@PlantaForm.Nome</strong>?
                             </p>
-                            <p class="text-muted mb-0">
-                                <small>Esta operação realiza um soft delete (a planta é marcada como inativa).</small>
-                            </p>
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <button type="button" class="btn btn-outline-secondary" @onclick="FecharModalExcluir">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="FecharModalExcluir">
                                 <i class="fas fa-times mr-1"></i> Não
                             </button>
-                            <button type="button" class="btn btn-danger" @onclick="ConfirmarExclusaoAsync">
+                            <button type="button" class="btn btn-danger btn-sm" @onclick="ConfirmarExclusaoAsync">
                                 <i class="fas fa-trash-alt mr-1"></i> Sim, excluir
                             </button>
                         </div>
@@ -270,6 +261,79 @@
 
     </div>
 </section>
+
+<style>
+    /* Cabeçalhos dos cards menores */
+    .card-title {
+        font-size: 0.9rem !important;
+    }
+
+    .card-header {
+        padding: 0.45rem 0.9rem !important;
+    }
+
+    .card-body {
+        padding: 0.6rem 0.9rem !important;
+    }
+
+    /* Labels e textos auxiliares menores */
+    label {
+        font-size: 0.78rem !important;
+        margin-bottom: 0.1rem !important;
+    }
+
+    .form-text,
+    small.text-muted {
+        font-size: 0.75rem !important;
+    }
+
+    /* Inputs mais compactos */
+    .form-control {
+        font-size: 0.8rem !important;
+        height: calc(1.45rem + 2px);
+        padding: 0.2rem 0.45rem;
+    }
+
+    .form-control-sm {
+        font-size: 0.78rem !important;
+        height: calc(1.35rem + 2px);
+        padding: 0.18rem 0.4rem;
+    }
+
+    .form-group {
+        margin-bottom: 0.4rem !important;
+    }
+
+    /* Botões compactos */
+    .btn,
+    .btn-sm {
+        font-size: 0.78rem !important;
+        padding: 0.25rem 0.55rem !important;
+    }
+
+    .btn-xs {
+        font-size: 0.72rem !important;
+        padding: 0.15rem 0.4rem !important;
+    }
+
+    /* Tabela mais enxuta */
+    .plantas-table th,
+    .plantas-table td {
+        font-size: 0.78rem;
+        padding: 0.23rem 0.4rem;
+    }
+
+    .plantas-table thead th {
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+
+    /* Paginação menor */
+    .pagination .page-link {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.4rem;
+    }
+</style>
 
 @code {
     // ViewModel da tela (UI)

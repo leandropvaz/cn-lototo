@@ -55,12 +55,6 @@
     <Content Remove="C:\Users\barba\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.14.0\contentFiles\any\any\BuildHost-netcore\zh-Hans\System.CommandLine.resources.dll" />
     <Content Remove="C:\Users\barba\.nuget\packages\microsoft.codeanalysis.workspaces.msbuild\4.14.0\contentFiles\any\any\BuildHost-netcore\zh-Hant\System.CommandLine.resources.dll" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="wwwroot\images\logoseugarcom.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.3.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />

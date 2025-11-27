@@ -2,6 +2,7 @@
 @using System.ComponentModel.DataAnnotations
 @using CN.Lototo.Application.Dto
 @using CN.Lototo.Application.Interfaces
+@using Microsoft.AspNetCore.Components.Authorization
 @inject PlantasService PlantaService
 @inject IEquipamentoAppService EquipamentoAppService
 @inject IJSRuntime Js
@@ -23,7 +24,7 @@
                         </h3>
 
                         <div class="card-tools">
-                            <span class="badge badge-info">Passo @passoAtual de 3</span>
+                            <span class="badge badge-info badge-sm">Passo @passoAtual de 3</span>
                         </div>
                     </div>
 
@@ -34,7 +35,9 @@
                         {
                             <div class="form-group">
                                 <label>Planta</label>
-                                <select class="form-control" @onchange="PlantaAlterada">
+                                <select class="form-control"
+                                        @onchange="PlantaAlterada"
+                                        disabled="@(PerfilLogado == PerfilUsuario.Administrador && PlantaIdLogado.HasValue)">
                                     <option value="">-- selecione a planta --</option>
                                     @foreach (var p in Plantas)
                                     {
@@ -43,12 +46,19 @@
                                         </option>
                                     }
                                 </select>
+
+                                @if (PerfilLogado == PerfilUsuario.Administrador && PlantaIdLogado.HasValue)
+                                {
+                                    <small class="form-text text-muted">
+                                        A planta é fixa para o administrador.
+                                    </small>
+                                }
                             </div>
 
                             <div class="form-group mt-3">
                                 <label>Modo de operação</label>
 
-                                <div class="icheck-primary">
+                                <div class="icheck-primary radio-small">
                                     <input type="radio" id="modoManual" name="modoCadastro"
                                            checked="@(ModoSelecionado == ModoCadastro.Manual)"
                                            @onchange="() => ModoSelecionado = ModoCadastro.Manual" />
@@ -57,7 +67,7 @@
                                     </label>
                                 </div>
 
-                                <div class="icheck-primary">
+                                <div class="icheck-primary radio-small">
                                     <input type="radio" id="modoImportacao" name="modoCadastro"
                                            checked="@(ModoSelecionado == ModoCadastro.ImportacaoExcel)"
                                            @onchange="() => ModoSelecionado = ModoCadastro.ImportacaoExcel" />
@@ -67,9 +77,6 @@
                                 </div>
                             </div>
 
-                            <small class="text-muted">
-                                Selecione a planta e escolha se deseja cadastrar manualmente ou importar de um ficheiro Excel.
-                            </small>
                         }
                         else if (passoAtual == 2)
                         {
@@ -181,7 +188,7 @@
                                         @if (!string.IsNullOrEmpty(Manual.ImageFileName))
                                         {
                                             <small class="form-text text-muted">
-                                                Ficheiro: @Manual.ImageFileName
+                                                Arquivo: @Manual.ImageFileName
                                             </small>
                                         }
                                     </div>
@@ -191,7 +198,7 @@
                                         <InputTextArea class="form-control" rows="3" @bind-Value="Manual.ImageNotes" />
                                     </div>
 
-                                    <button type="submit" class="btn btn-success btn-block">
+                                    <button type="submit" class="btn btn-success btn-block btn-sm">
                                         <i class="fas fa-save mr-1"></i>
                                         @(IsEditMode ? "Guardar alterações" : "Salvar equipamento")
                                     </button>
@@ -201,7 +208,7 @@
                             {
                                 @* IMPORTAÇÃO *@
                                 <div class="form-group">
-                                    <label>Selecione um ou mais ficheiros Excel</label>
+                                    <label>Selecione um ou mais arquivos Excel</label>
                                     <InputFile OnChange="ArquivosExcelSelecionados"
                                                multiple
                                                accept=".xlsx"
@@ -215,7 +222,7 @@
                                             <table class="table table-sm table-striped table-bordered mb-2">
                                                 <thead class="thead-light">
                                                     <tr>
-                                                        <th>Ficheiro</th>
+                                                        <th>Arquivo</th>
                                                         <th>Estado</th>
                                                         <th>Progresso</th>
                                                     </tr>
@@ -245,7 +252,7 @@
                                             </table>
                                         </div>
 
-                                        <button class="btn btn-primary btn-block"
+                                        <button class="btn btn-primary btn-block btn-sm"
                                                 disabled="@Importando"
                                                 @onclick="IniciarImportacao">
                                             <i class="fas fa-file-import mr-1"></i>
@@ -267,7 +274,7 @@
                                 }
                                 else
                                 {
-                                    <p class="text-muted">Nenhum ficheiro selecionado.</p>
+                                    <p class="text-muted">Nenhum arquivo selecionado.</p>
                                 }
                             }
                         }
@@ -278,7 +285,7 @@
                                 A lista de equipamentos foi atualizada na coluna à direita.
                             </p>
                             <p class="text-muted mb-0">
-                                Pode continuar a cadastrar manualmente ou importar novos ficheiros.
+                                Pode continuar a cadastrar manualmente ou importar novos arquivos.
                             </p>
                         }
 
@@ -373,13 +380,13 @@
                                         <th colspan="4" class="text-center">II. Controlo energias</th>
                                         <th rowspan="2" style="width: 5%;" class="text-center align-middle">Img</th>
                                         <th rowspan="2" style="width: 5%;" class="text-center align-middle">Ativo</th>
-                                        <th rowspan="2" style="width: 10%;" class="text-right align-middle">Ações</th>
+                                        <th rowspan="2" style="width: 15%;" class="text-right align-middle">Ações</th>
                                     </tr>
                                     <tr class="thead-light">
                                         <th style="width: 8%;">Tag</th>
                                         <th style="width: 22%;">Equip.</th>
                                         <th style="width: 6%;">Nº</th>
-                                        <th style="width: 12%;">Tipo energ.</th>
+                                        <th style="width: 10%;">Tipo energ.</th>
                                         <th style="width: 18%;">Desc. energ.</th>
 
                                         <th style="width: 10%;">TAG disp.</th>
@@ -418,21 +425,21 @@
                                                 <td class="text-center">
                                                     @if (!e.IsDeleted)
                                                     {
-                                                        <span class="badge bg-success">Ativo</span>
+                                                        <span class="badge bg-success badge-sm">Ativo</span>
                                                     }
                                                     else
                                                     {
-                                                        <span class="badge bg-secondary">Inativo</span>
+                                                        <span class="badge bg-secondary" badge-sm>Inativo</span>
                                                     }
                                                 </td>
                                                 <td class="text-right">
-                                                    <button class="btn btn-xs btn-outline-primary mr-1"
+                                                    <button class="btn btn-xs btn-outline-primary btn-xxs"
                                                             title="Editar"
                                                             @onclick="() => IniciarEdicao(e)">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
-                                                    <button class="btn btn-xs btn-outline-danger"
-                                                            title="Soft delete"
+                                                    <button class="btn btn-xs btn-outline-danger btn-xxs"
+                                                            title="delete"
                                                             @onclick="() => SoftDelete(e)">
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>
@@ -536,7 +543,7 @@
 
                         <div class="modal-footer">
                             <button type="button"
-                                    class="btn btn-secondary"
+                                    class="btn btn-secondary btn-sm"
                                     @onclick="FecharModalImagem">
                                 Fechar
                             </button>
@@ -551,10 +558,65 @@
 </section>
 
 <style>
+    /* Cabeçalho / cards mais compactos */
+
+
+    .card-title {
+        font-size: 0.9rem !important;
+    }
+
+    .card-header {
+        padding: 0.45rem 0.9rem !important;
+    }
+
+    .card-body {
+        padding: 0.6rem 0.9rem !important;
+    }
+
+    /* Labels e textos auxiliares menores */
+    label {
+        font-size: 0.78rem !important;
+        margin-bottom: 0.1rem !important;
+    }
+
+    .form-text,
+    small.text-muted {
+        font-size: 0.75rem !important;
+    }
+
+    /* Inputs mais compactos */
+    .form-control {
+        font-size: 0.8rem !important;
+        height: calc(1.45rem + 2px);
+        padding: 0.2rem 0.45rem;
+    }
+
+    .form-control-sm {
+        font-size: 0.78rem !important;
+        height: calc(1.35rem + 2px);
+        padding: 0.18rem 0.4rem;
+    }
+
+    .form-group {
+        margin-bottom: 0.4rem !important;
+    }
+
+    /* Botões menores */
+    .btn,
+    .btn-sm {
+        font-size: 0.78rem !important;
+        padding: 0.25rem 0.55rem !important;
+    }
+
+    .btn-xs {
+        font-size: 0.72rem !important;
+        padding: 0.15rem 0.4rem !important;
+    }
+
     /* Tabela de equipamentos (coluna direita) */
     .equip-table th,
     .equip-table td {
-        font-size: 0.80rem;
+        font-size: 0.78rem;
         padding: 0.25rem 0.45rem;
     }
 
@@ -562,9 +624,29 @@
         font-size: 0.75rem;
         white-space: nowrap;
     }
+
+    /* Paginação menor */
+    .pagination .page-link {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.4rem;
+    }
 </style>
 
 @code {
+    // Perfil do usuário (igual da tela de usuários)
+    public enum PerfilUsuario
+    {
+        Usuario = 1,
+        Administrador = 2,
+        SuperGestor = 3
+    }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthStateTask { get; set; } = default!;
+
+    private PerfilUsuario PerfilLogado { get; set; } = PerfilUsuario.Usuario;
+    private int? PlantaIdLogado { get; set; }
+
     private enum ModoCadastro
     {
         Manual,
@@ -662,7 +744,48 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Plantas = (await PlantaService.ListarAsync()).ToList();
+        // Lê perfil e planta do usuário logado
+        var authState = await AuthStateTask;
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            if (int.TryParse(user.FindFirst("Perfil")?.Value, out var perfilInt))
+                PerfilLogado = (PerfilUsuario)perfilInt;
+
+            if (int.TryParse(user.FindFirst("PlantaId")?.Value, out var plantaId))
+                PlantaIdLogado = plantaId;
+        }
+
+        await CarregarPlantasAsync();
+
+        // Se for Administrador com planta definida, já seleciona e carrega equipamentos
+        if (PerfilLogado == PerfilUsuario.Administrador && PlantaIdLogado.HasValue)
+        {
+            PlantaSelecionadaId = PlantaIdLogado.Value;
+            await CarregarEquipamentosAsync();
+        }
+    }
+
+    private async Task CarregarPlantasAsync()
+    {
+        var dtos = await PlantaService.ListarAsync();
+
+        if (PerfilLogado == PerfilUsuario.SuperGestor)
+        {
+            Plantas = dtos.ToList();
+        }
+        else if (PlantaIdLogado.HasValue)
+        {
+            // Para Admin/Usuario, apenas a planta do logado
+            Plantas = dtos
+                .Where(p => p.Id == PlantaIdLogado.Value)
+                .ToList();
+        }
+        else
+        {
+            Plantas = dtos.ToList();
+        }
     }
 
     private async Task ShowToastSucessoAsync(string mensagem) =>
@@ -881,7 +1004,7 @@
     {
         if (!ArquivosImportacao.Any() || PlantaSelecionadaId is null or 0)
         {
-            await ShowToastErroAsync("Selecione uma planta e um ficheiro antes de importar.");
+            await ShowToastErroAsync("Selecione uma planta e um arquivo antes de importar.");
             return;
         }
 
@@ -927,7 +1050,7 @@
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            await ShowToastErroAsync("Ocorreu um erro ao importar o(s) ficheiro(s).");
+            await ShowToastErroAsync("Ocorreu um erro ao importar o(s) arquivo(s).");
         }
         finally
         {
@@ -957,7 +1080,7 @@
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            await ShowToastErroAsync("Erro ao remover (soft delete) o equipamento.");
+            await ShowToastErroAsync("Erro ao remover o equipamento.");
         }
     }
 

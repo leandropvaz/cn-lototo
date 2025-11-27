@@ -15,11 +15,11 @@
         <div class="row mb-2">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">
+                    <h4 class="mb-0 conteudo-titulo">
                         <i class="fas fa-bolt mr-1"></i>
                         Consulta de energias perigosas por equipamento
                     </h4>
-                    <small class="text-muted">
+                    <small class="text-muted titulo-planta">
                         Planta atual:
                         @if (!string.IsNullOrEmpty(PlantaDescricao))
                         {
@@ -40,38 +40,38 @@
             <div class="col-12">
                 <div class="card card-primary card-outline mb-3">
                     <div class="card-header">
-                        <h3 class="card-title">
+                        <h3 class="card-title card-title-compact">
                             <i class="fas fa-search mr-1"></i>
                             Filtros de pesquisa
                         </h3>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body filtros-body">
                         <EditForm OnValidSubmit="BuscarAsync" Model="@this">
                             <div class="form-row">
                                 <div class="form-group col-12 col-md-3">
-                                    <label>Tag do equipamento</label>
-                                    <InputText class="form-control form-control-sm"
+                                    <label class="filtro-label">Tag do equipamento</label>
+                                    <InputText class="form-control form-control-sm filtro-input"
                                                @bind-Value="FiltroTag"
                                                placeholder="Ex.: FMTZ-100-BC11" />
                                 </div>
 
                                 <div class="form-group col-12 col-md-3">
-                                    <label>Nome / descrição do equipamento</label>
-                                    <InputText class="form-control form-control-sm"
+                                    <label class="filtro-label">Nome / descrição do equipamento</label>
+                                    <InputText class="form-control form-control-sm filtro-input"
                                                @bind-Value="FiltroNomeEquipamento"
                                                placeholder="Parte do nome..." />
                                 </div>
 
                                 <div class="form-group col-12 col-md-3">
-                                    <label>Tipo de energia</label>
-                                    <InputText class="form-control form-control-sm"
+                                    <label class="filtro-label">Tipo de energia</label>
+                                    <InputText class="form-control form-control-sm filtro-input"
                                                @bind-Value="FiltroTipoEnergia"
                                                placeholder="Ex.: Elétrica, Pneumática..." />
                                 </div>
 
                                 <div class="form-group col-12 col-md-3">
-                                    <label>Descrição da energia perigosa</label>
-                                    <InputText class="form-control form-control-sm"
+                                    <label class="filtro-label">Descrição da energia perigosa</label>
+                                    <InputText class="form-control form-control-sm filtro-input"
                                                @bind-Value="FiltroDescricaoEnergia"
                                                placeholder="Parte da descrição..." />
                                 </div>
@@ -79,42 +79,42 @@
 
                             <div class="form-row">
                                 <div class="form-group col-12 col-md-3">
-                                    <label>TAG disp. isolamento</label>
-                                    <InputText class="form-control form-control-sm"
+                                    <label class="filtro-label">TAG disp. isolamento</label>
+                                    <InputText class="form-control form-control-sm filtro-input"
                                                @bind-Value="FiltroTagDispositivo"
                                                placeholder="TAG dispositivo" />
                                 </div>
 
                                 <div class="form-group col-12 col-md-3">
-                                    <label>Localização dispositivo</label>
-                                    <InputText class="form-control form-control-sm"
+                                    <label class="filtro-label">Localização dispositivo</label>
+                                    <InputText class="form-control form-control-sm filtro-input"
                                                @bind-Value="FiltroLocalizacaoDispositivo"
                                                placeholder="Painel, área, sala..." />
                                 </div>
 
                                 <div class="form-group col-12 col-md-3">
-                                    <label>Dispositivo de isolamento</label>
-                                    <InputText class="form-control form-control-sm"
+                                    <label class="filtro-label">Dispositivo de isolamento</label>
+                                    <InputText class="form-control form-control-sm filtro-input"
                                                @bind-Value="FiltroDispositivoIsolamento"
                                                placeholder="Disjuntor, válvula, etc." />
                                 </div>
 
                                 <div class="form-group col-12 col-md-3">
-                                    <label>Bloqueio</label>
-                                    <InputText class="form-control form-control-sm"
+                                    <label class="filtro-label">Bloqueio</label>
+                                    <InputText class="form-control form-control-sm filtro-input"
                                                @bind-Value="FiltroBloqueio"
                                                placeholder="Tipo de bloqueio" />
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-end">
+                            <div class="d-flex justify-content-end mt-1">
                                 <button type="button"
-                                        class="btn btn-default btn-sm mr-2"
+                                        class="btn btn-default btn-sm btn-compact mr-2"
                                         @onclick="LimparFiltros">
                                     <i class="fas fa-eraser mr-1"></i> Limpar
                                 </button>
                                 <button type="submit"
-                                        class="btn btn-primary btn-sm"
+                                        class="btn btn-primary btn-sm btn-compact"
                                         disabled="@CarregandoEquipamentos">
                                     <i class="fas fa-search mr-1"></i>
                                     @(CarregandoEquipamentos ? "A pesquisar..." : "Pesquisar")
@@ -129,13 +129,13 @@
             <div class="col-12">
                 <div class="card card-info card-outline">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h3 class="card-title">
+                        <h3 class="card-title card-title-compact">
                             <i class="fas fa-list mr-1"></i>
                             Resultados
                         </h3>
 
                         <div class="card-tools">
-                            <small class="text-muted">
+                            <small class="text-muted resultados-info">
                                 @if (Resultados?.Any() == true)
                                 {
                                     @($"{Resultados.Count} equipamento(s) encontrado(s)")
@@ -285,7 +285,7 @@
 
                         <div class="modal-footer">
                             <button type="button"
-                                    class="btn btn-secondary"
+                                    class="btn btn-secondary btn-compact"
                                     @onclick="FecharModalImagem">
                                 Fechar
                             </button>
@@ -300,20 +300,72 @@
 </section>
 
 <style>
+    /* Título principal mais compacto */
+    .conteudo-titulo {
+        font-size: 1.1rem !important;
+        font-weight: 600;
+    }
+
+    .titulo-planta {
+        font-size: 0.78rem !important;
+    }
+
+    /* Cabeçalho dos cards menor */
+    .card-title-compact {
+        font-size: 0.9rem !important;
+    }
+
+    .card-header {
+        padding: 0.45rem 0.9rem !important;
+    }
+
+    .filtros-body {
+        padding: 0.55rem 0.9rem !important;
+    }
+
+    /* Labels dos filtros */
+    .filtro-label {
+        font-size: 0.78rem !important;
+        margin-bottom: 0.1rem !important;
+    }
+
+    /* Inputs dos filtros */
+    .filtro-input,
+    .form-control-sm {
+        font-size: 0.78rem !important;
+        height: calc(1.4rem + 2px) !important;
+        padding: 0.18rem 0.4rem !important;
+    }
+
+    .form-group {
+        margin-bottom: 0.35rem !important;
+    }
+
+    /* Botões compactos */
+    .btn-compact {
+        font-size: 0.78rem !important;
+        padding: 0.25rem 0.55rem !important;
+    }
+
+    .resultados-info {
+        font-size: 0.76rem !important;
+    }
+
+    /* Tabela */
     .equip-table th,
     .equip-table td {
-        font-size: 0.80rem;
-        padding: 0.25rem 0.45rem;
+        font-size: 0.72rem;
+        padding: 0.22rem 0.35rem;
     }
 
     .equip-table thead th {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         white-space: nowrap;
     }
 </style>
 
 @code {
-    [CascadingParameter] 
+    [CascadingParameter]
     private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
 
     private int PlantIdAtual { get; set; }

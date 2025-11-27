@@ -43,11 +43,11 @@
         <ul class="navbar-nav ml-auto">
 
             <!-- Botão de colapsar sidebar -->
-            <li class="nav-item">
+@*             <li class="nav-item">
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button">
                     <i class="fas fa-bars"></i>
                 </a>
-            </li>
+            </li> *@
 
             <!-- Botão de saída -->
             <li class="nav-item">
@@ -82,7 +82,7 @@
                         {
                             <a href="/equipamentos" class="nav-link ml-4">
                                 <i class="fas fa-plus nav-icon"></i>
-                                <p style="margin-left: 4px;">Cadastrar / Importar</p>
+                                <p style="margin-left: 2px;">Gerenciar</p>
                             </a>
                         }
                     </li>
@@ -104,7 +104,7 @@
                     }
 
                     <!-- MENUS ESPECÍFICOS PARA SUPER GESTOR -->
-                    @if (IsAdmin || IsSuperGestor)
+                    @if (IsSuperGestor)
                     {
                         <!-- Planta -->
                         <li class="nav-item">
@@ -129,6 +129,22 @@
 
                 </ul>
             </nav>
+
+
+            <div class="sidebar-footer text-center mt-auto py-3">
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+ 
+                <img src="images/logo.png"
+                     alt="Power Wave Solutions"
+                     class="img-fluid sidebar-logo-footer" />
+        </div>
         </div>
     </aside>
 
@@ -139,14 +155,145 @@
 
     <!-- Footer -->
     <footer class="main-footer" style="background-color: #006CB5; color: white;">
-        Power Wave Solutions -
-        <i class="nav-icon fas fa-cog"></i>
-        Lototo
+        Power Wave Solutions - Todos os direitos reservados
         <div class="float-right d-none d-sm-inline-block">
+            Versão 1.0.0
         </div>
     </footer>
+    <style>
 
+   /*      /* ======== TOPO (NAVBAR) COMPACTA ======== */
+        .main-header.navbar {
+            height: 42px !important;
+            min-height: 42px !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        .main-header .nav-link {
+            padding-top: 4px !important;
+            padding-bottom: 4px !important;
+            font-size: 0.78rem !important;
+        }
+
+        /* Ícones menores */
+        .main-header i {
+            font-size: 0.85rem !important;
+        }
+
+        /* ======== RODAPÉ MAIS BAIXO ======== */
+/*         .main-footer {
+            padding: 4px 10px !important;
+            font-size: 0.75rem !important;
+            height: 32px !important;
+        }
+ */
+        /* ======== SIDEBAR COMPACTA ======== */
+        .main-sidebar {
+            padding-top: 6px !important;
+        }
+
+        .sidebar .nav-link {
+            padding: 4px 10px !important;
+            font-size: 0.78rem !important;
+        }
+
+        .sidebar .nav-icon {
+            font-size: 0.85rem !important;
+            margin-right: 6px !important;
+        }
+
+        .sidebar-brand img {
+            max-width: 150px !important;
+            margin-bottom: 10px !important;
+        } 
+
+        /* ======== GERAL – REDUZIR FONTE E ESPAÇAMENTO ======== */
+
+        body, label, p, span, small {
+            font-size: 0.80rem !important;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-size: 0.95rem !important;
+            margin-bottom: 0.35rem !important;
+        }
+
+        /* Inputs menores */
+        .form-control {
+            font-size: 0.78rem !important;
+            height: calc(1.4rem + 2px) !important;
+            padding: 0.22rem 0.45rem !important;
+        }
+
+        /* Botões menores */
+        .btn {
+            font-size: 0.75rem !important;
+            padding: 0.25rem 0.6rem !important;
+        }
+
+        .btn-sm {
+            font-size: 0.72rem !important;
+            padding: 0.2rem 0.45rem !important;
+        }
+
+        .btn-xs {
+            font-size: 0.68rem !important;
+            padding: 0.15rem 0.35rem !important;
+        }
+
+        /* Tabela compacta */
+        table.table td,
+        table.table th {
+            padding: 0.25rem !important;
+            font-size: 0.75rem !important;
+        }
+        /* ====== LARGURA DA SIDEBAR MAIS ESTREITA ====== */
+        .main-sidebar,
+        .main-sidebar::before {
+            width: 170px !important; /* ajusta aqui: 160, 170, 180... */
+        }
+
+        /* faz o conteúdo respeitar a nova largura */
+        .content-wrapper,
+        .main-footer,
+        .main-header {
+            margin-left: 170px !important; /* mesmo valor da sidebar */
+        }
+
+        /* Deixa os itens do menu mais compactos e evita quebra estranha */
+        .nav-sidebar .nav-link p {
+            font-size: 0.78rem !important;
+            white-space: nowrap;
+        }
+
+        .nav-sidebar .nav-link {
+            padding-right: 6px !important;
+            padding-left: 8px !important;
+        }
+
+        .sidebar-brand img {
+            max-width: 130px !important; /* logo mais estreita pra caber bem */
+        }
+        /* Alinhar itens do lado esquerdo da navbar ao centro vertical */
+        .navbar-nav > li > .nav-link {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            height: 40px; /* mesmo tamanho da navbar reduzida */
+            display: flex !important;
+            align-items: center !important;
+            font-size: 0.80rem !important; /* opcional, reduz fonte */
+        }
+
+            /* Ícones também centralizados */
+            .navbar-nav > li > .nav-link i {
+                line-height: 1;
+                margin-right: 4px;
+            }
+    </style>
 </div>
+
+
 
 @code {
     [CascadingParameter]

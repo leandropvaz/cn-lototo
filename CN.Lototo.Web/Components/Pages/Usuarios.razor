@@ -84,17 +84,15 @@
                             <!-- Planta (filtrada pelo usuário logado) -->
                             <div class="form-group">
                                 <label>Planta</label>
-                                <InputSelect class="form-control" @bind-Value="UsuarioForm.PlantaId">
+                                <InputSelect class="form-control"
+                                             @bind-Value="UsuarioForm.PlantaId"
+                                             disabled="@(PerfilLogado == PerfilUsuario.Administrador && PlantaIdLogado.HasValue)">
                                     <option value="">-- Selecionar --</option>
                                     @foreach (var planta in Plantas)
                                     {
                                         <option value="@planta.Id">@planta.Nome (@planta.Codigo)</option>
                                     }
                                 </InputSelect>
-                                <small class="form-text text-muted">
-                                    Usuários com perfil <strong>Usuário</strong> e
-                                    <strong>Administrador</strong> normalmente ficam associados a uma planta.
-                                </small>
                             </div>
 
                             <!-- Ativo -->
@@ -175,13 +173,6 @@
                             </div>
 
                             <div class="btn-group btn-group-sm">
- @*                                <button type="button" class="btn btn-default" @onclick="ExportarCsvAsync">
-                                    <i class="fas fa-file-csv mr-1"></i> CSV
-                                </button>
-                                <button type="button" class="btn btn-default" @onclick="ExportarExcelAsync">
-                                    <i class="far fa-file-excel mr-1"></i> Excel
-                                </button> *@
-
                                 <select class="form-control form-control-sm ml-2"
                                         style="width: 80px;"
                                         @bind="TamanhoPagina">
@@ -193,15 +184,15 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-sm mb-0">
+                            <table class="table table-bordered table-hover table-sm mb-0 usuarios-table">
                                 <thead class="thead-light">
                                     <tr>
                                         <th style="width: 15%;">Login</th>
                                         <th style="width: 25%;">Nome</th>
                                         <th style="width: 15%;">Perfil</th>
                                         <th style="width: 25%;">Planta</th>
-                                        <th style="width: 10%;">Ativo</th>
-                                        <th style="width: 10%;" class="text-right">Ações</th>
+                                        <th style="width: 10%;" class="text-center">Ativo</th>
+                                        <th style="width: 10%;" class="text-center">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -217,14 +208,14 @@
                                                 <td class="text-center">
                                                     @if (u.Ativa)
                                                     {
-                                                        <span class="badge bg-success">Ativo</span>
+                                                        <span class="badge bg-success badge-sm">Ativo</span>
                                                     }
                                                     else
                                                     {
-                                                        <span class="badge bg-secondary">Inativo</span>
+                                                        <span class="badge bg-secondary badge-sm">Inativo</span>
                                                     }
                                                 </td>
-                                                <td class="text-right">
+                                                <td class="text-center">
                                                     <button class="btn btn-xs btn-outline-primary"
                                                             title="Editar"
                                                             @onclick="() => IniciarEdicao(u.Id)">
@@ -303,18 +294,15 @@
                                 Tem certeza que deseja excluir o usuário
                                 <strong>@UsuarioForm.Login</strong>?
                             </p>
-                            <p class="text-muted mb-0">
-                                <small>Esta operação realiza um soft delete (o usuário é marcado como inativo).</small>
-                            </p>
                         </div>
                         <div class="modal-footer justify-content-between">
                             <button type="button"
-                                    class="btn btn-outline-secondary"
+                                    class="btn btn-outline-secondary btn-sm"
                                     @onclick="FecharModalExcluir">
                                 <i class="fas fa-times mr-1"></i> Não
                             </button>
                             <button type="button"
-                                    class="btn btn-danger"
+                                    class="btn btn-danger btn-sm"
                                     @onclick="ConfirmarExclusaoAsync">
                                 <i class="fas fa-trash-alt mr-1"></i> Sim, excluir
                             </button>
@@ -329,12 +317,85 @@
     </div>
 </section>
 
+<style>
+    /* Cabeçalhos dos cards menores */
+    .card-title {
+        font-size: 0.9rem !important;
+    }
+
+    .card-header {
+        padding: 0.45rem 0.9rem !important;
+    }
+
+    .card-body {
+        padding: 0.6rem 0.9rem !important;
+    }
+
+    /* Labels e textos auxiliares menores */
+    label {
+        font-size: 0.78rem !important;
+        margin-bottom: 0.1rem !important;
+    }
+
+    .form-text,
+    small.text-muted {
+        font-size: 0.75rem !important;
+    }
+
+    /* Inputs mais compactos */
+    .form-control {
+        font-size: 0.8rem !important;
+        height: calc(1.45rem + 2px);
+        padding: 0.2rem 0.45rem;
+    }
+
+    .form-control-sm {
+        font-size: 0.78rem !important;
+        height: calc(1.35rem + 2px);
+        padding: 0.18rem 0.4rem;
+    }
+
+    .form-group {
+        margin-bottom: 0.4rem !important;
+    }
+
+    /* Botões compactos */
+    .btn,
+    .btn-sm {
+        font-size: 0.78rem !important;
+        padding: 0.25rem 0.55rem !important;
+    }
+
+    .btn-xs {
+        font-size: 0.72rem !important;
+        padding: 0.15rem 0.4rem !important;
+    }
+
+    /* Tabela mais enxuta */
+    .usuarios-table th,
+    .usuarios-table td {
+        font-size: 0.78rem;
+        padding: 0.23rem 0.4rem;
+    }
+
+    .usuarios-table thead th {
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+
+    /* Paginação menor */
+    .pagination .page-link {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.4rem;
+    }
+</style>
+
 @code {
     public enum PerfilUsuario
     {
-        Usuario = 1,        // vê e pesquisa equipamentos da própria planta
-        Administrador = 2,  // gerencia usuários e equipamento da planta
-        SuperGestor = 3     // vê todas as plantas e cadastra administradores
+        Usuario = 1,
+        Administrador = 2,
+        SuperGestor = 3
     }
 
     public class UsuarioViewModel
@@ -380,10 +441,7 @@
 
     private bool MostrarModalExcluir { get; set; } = false;
 
-    // Perfis disponíveis conforme perfil logado:
-    // - SuperGestor: todos
-    // - Administrador: Usuario + Administrador
-    // - Usuario: só Usuario
+    // Perfis disponíveis conforme perfil logado
     private IEnumerable<PerfilUsuario> PerfisDisponiveis =>
         PerfilLogado switch
         {
@@ -421,7 +479,6 @@
 
         if (user.Identity?.IsAuthenticated == true)
         {
-            // Ajusta aqui se os nomes das claims forem outros
             if (int.TryParse(user.FindFirst("Perfil")?.Value, out var perfilInt))
                 PerfilLogado = (PerfilUsuario)perfilInt;
 
@@ -435,10 +492,23 @@
         await CarregarPlantasAsync();
         await CarregarUsuariosAsync();
 
-        // garante que ao abrir a tela o form está sempre limpo
-        UsuarioForm = new UsuarioViewModel();
+        // formulário inicial sempre limpo (mas com planta do logado, se for o caso)
+        UsuarioForm = CriarNovoUsuarioForm();
         IsEditMode = false;
         UsuarioEmEdicaoId = null;
+    }
+
+    private UsuarioViewModel CriarNovoUsuarioForm()
+    {
+        var vm = new UsuarioViewModel();
+
+        // Para administrador (e usuários comuns) travamos na planta logada
+        if (PerfilLogado != PerfilUsuario.SuperGestor && PlantaIdLogado.HasValue)
+        {
+            vm.PlantaId = PlantaIdLogado.Value;
+        }
+
+        return vm;
     }
 
     private async Task CarregarPlantasAsync()
@@ -447,19 +517,16 @@
 
         if (PerfilLogado == PerfilUsuario.SuperGestor)
         {
-            // SuperGestor vê todas
             Plantas = dtos.ToList();
         }
         else if (PlantaIdLogado.HasValue)
         {
-            // Demais perfis: apenas a própria planta
             Plantas = dtos
                 .Where(p => p.Id == PlantaIdLogado.Value)
                 .ToList();
         }
         else
         {
-            // fallback enquanto ainda não tens claims certinhas: libera todas
             Plantas = dtos.ToList();
         }
     }
@@ -468,25 +535,20 @@
     {
         var dtos = await UsuarioService.ListarAsync();
 
-        // Regras de visibilidade da lista:
-
         if (PerfilLogado == PerfilUsuario.SuperGestor)
         {
-            // SuperGestor vê todos (nenhum filtro extra)
+            // vê todos
         }
         else if (PerfilLogado == PerfilUsuario.Administrador)
         {
-            // Administrador só vê USUÁRIOS (não vê SuperGestor, nem outros Admins),
-            // e apenas da sua planta se PlantaIdLogado estiver preenchido.
             dtos = dtos
                 .Where(u =>
                     u.Perfil == (int)PerfilUsuario.Usuario &&
                     (!PlantaIdLogado.HasValue || u.PlantaId == PlantaIdLogado.Value))
                 .ToList();
         }
-        else // PerfilUsuario.Usuario
+        else // Usuario comum
         {
-            // Usuário comum: vê apenas ele próprio (se claim existir)
             if (UsuarioIdLogado.HasValue)
             {
                 dtos = dtos
@@ -535,7 +597,6 @@
         }
 
         // Regra 2: Adm/Usuário só podem associar usuários à própria planta
-        // Só aplico a regra se eu realmente souber a planta do logado
         if (PerfilLogado != PerfilUsuario.SuperGestor && PlantaIdLogado.HasValue)
         {
             if (UsuarioForm.PlantaId != PlantaIdLogado.Value)
@@ -579,7 +640,7 @@
                 await UsuarioService.CriarAsync(dto);
             }
 
-            UsuarioForm = new UsuarioViewModel();
+            UsuarioForm = CriarNovoUsuarioForm();
             IsEditMode = false;
             UsuarioEmEdicaoId = null;
 
@@ -600,8 +661,6 @@
     {
         var usuario = TodosUsuarios.FirstOrDefault(u => u.Id == id);
         if (usuario is null) return;
-
-        // BLOQUEIOS DE EDIÇÃO
 
         // Admin não pode editar Admin nem SuperGestor
         if (PerfilLogado == PerfilUsuario.Administrador &&
@@ -661,7 +720,7 @@
         {
             await UsuarioService.RemoverAsync(UsuarioEmEdicaoId.Value);
 
-            UsuarioForm = new UsuarioViewModel();
+            UsuarioForm = CriarNovoUsuarioForm();
             IsEditMode = false;
             UsuarioEmEdicaoId = null;
 
@@ -684,7 +743,7 @@
     {
         IsEditMode = false;
         UsuarioEmEdicaoId = null;
-        UsuarioForm = new UsuarioViewModel();
+        UsuarioForm = CriarNovoUsuarioForm();
     }
 
     private void LimparPesquisa()

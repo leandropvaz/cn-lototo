@@ -10,53 +10,126 @@
 @inject PlantasService PlantaService
 @layout EmptyLayout
 
-<div class="container d-flex justify-content-center align-items-center vh-100">
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
     <div class="row w-100 justify-content-center">
-        <div class="col-12 col-sm-6 col-md-6">
-            <div class="card shadow-lg p-4" style="background-color: #ede8e2; border-radius: 16px;">
+        <div class="col-11 col-sm-7 col-md-5 col-lg-4">
+            <div class="card shadow login-card">
 
-                <!-- Logo -->
-                <img src="/images/CN.png" alt="Cimento Nacional"
-                     class="mb-4 d-block mx-auto" style="max-width: 250px; height: auto;" />
+                <div class="card-body p-3 p-sm-4">
 
-                <!-- Formulário de Login -->
-                <EditForm Model="@vm" OnValidSubmit="LoginAsync" FormName="LoginForm">
-                    <DataAnnotationsValidator />
+                    <!-- Logo -->
+                    <img src="/images/CN.png"
+                         alt="Cimento Nacional"
+                         class="mb-3 d-block mx-auto login-logo" />
 
-                    <div class="mb-3 text-start">
-                        <label class="form-label">Login</label>
-                        <InputText @bind-Value="vm.Login" class="form-control" />
+                    <div class="login-title-wrapper text-center mb-3">
+                        <i class="nav-icon fas fa-tools login-title-icon"></i>
+
+                        <span class="login-title-text">Lototo</span>
+
+                        <i class="nav-icon fas fa-tools login-title-icon"></i>
                     </div>
 
-                    <div class="mb-3 text-start">
-                        <label class="form-label">Senha</label>
-                        <InputText @bind-Value="vm.Senha" type="password" class="form-control" />
-                    </div>
+                    <!-- Formulário de Login -->
+                    <EditForm Model="@vm" OnValidSubmit="LoginAsync" FormName="LoginForm">
+                        <DataAnnotationsValidator />
 
-                    <div class="mb-4 text-start">
-                        <label class="form-label">Planta</label>
-                        <InputSelect @bind-Value="vm.PlantaId" class="form-control">
-                            <option value="">Selecione...</option>
-                            @foreach (var planta in Plantas)
-                            {
-                                <option value="@planta.Id">
-                                    @planta.Nome (@planta.Codigo)
-                                </option>
-                            }
-                        </InputSelect>
-                    </div>
+                        <div class="mb-2 text-start">
+                            <label class="form-label login-label">Login</label>
+                            <InputText @bind-Value="vm.Login" class="form-control form-control-sm login-input" />
+                        </div>
 
-                    <button class="btn btn-primary w-100">Entrar</button>
+                        <div class="mb-2 text-start">
+                            <label class="form-label login-label">Senha</label>
+                            <InputText @bind-Value="vm.Senha" type="password" class="form-control form-control-sm login-input" />
+                        </div>
 
-                    @if (!string.IsNullOrEmpty(errorMessage))
-                    {
-                        <div class="alert alert-warning mt-3">@errorMessage</div>
-                    }
-                </EditForm>
+                        <div class="mb-3 text-start">
+                            <label class="form-label login-label">Planta</label>
+                            <InputSelect @bind-Value="vm.PlantaId" class="form-control form-control-sm login-input">
+                                <option value="">Selecione...</option>
+                                @foreach (var planta in Plantas)
+                                {
+                                    <option value="@planta.Id">
+                                        @planta.Nome (@planta.Codigo)
+                                    </option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <button class="btn btn-primary w-100 btn-sm btn-login">
+                            Entrar
+                        </button>
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-warning mt-2 py-2 px-2 login-alert">
+                                @errorMessage
+                            </div>
+                        }
+                    </EditForm>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .login-title-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px; /* Espaçamento entre ícones e texto */
+    }
+
+    .login-title-text {
+        font-weight: 500; /* semibold / bold light */
+        font-size: 1rem;
+        letter-spacing: 1px;
+        color: #444;
+    }
+
+    .login-title-icon {
+        font-size: 0.9rem;
+        opacity: 0.7;
+    }
+
+    .login-card {
+        background-color: #ede8e2;
+        border-radius: 14px;
+        font-size: 0.85rem;
+    }
+
+    .login-logo {
+        max-width: 170px;
+        height: auto;
+    }
+
+    .login-title {
+        font-size: 0.9rem;
+    }
+
+    .login-label {
+        font-size: 0.78rem;
+        margin-bottom: 0.1rem;
+    }
+
+    .login-input {
+        font-size: 0.80rem;
+        height: calc(1.4rem + 2px);
+        padding: 0.2rem 0.4rem;
+    }
+
+    .btn-login {
+        font-size: 0.85rem;
+        padding-top: 0.35rem;
+        padding-bottom: 0.35rem;
+    }
+
+    .login-alert {
+        font-size: 0.78rem;
+    }
+</style>
 
 @code {
     private LoginDto vm = new();
@@ -76,7 +149,7 @@
 
     private async Task LoginAsync()
     {
-        // opcional: valida se escolheu planta
+        // valida planta selecionada
         if (vm.PlantaId is null || vm.PlantaId == 0)
         {
             errorMessage = "Selecione a planta.";
@@ -91,7 +164,7 @@
             return;
         }
 
-        // Já está autenticado no provider, só navegar
+        // Já autenticado no provider, só navegar
         Nav.NavigateTo("/home");
     }
 }
