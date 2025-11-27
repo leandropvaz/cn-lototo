@@ -1,0 +1,57 @@
+name: Build and deploy ASP.Net Core app to Azure Web App - Lototo
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'   # Ajuste conforme versão do teu projeto
+
+      - name: Restore
+        run: dotnet restore ./CN.Lototo.Web/CN.Lototo.Web.csproj
+
+      - name: Build
+        run: dotnet build ./CN.Lototo.Web/CN.Lototo.Web.csproj --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish ./CN.Lototo.Web/CN.Lototo.Web.csproj -c Release -o ./publish --no-build
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-app
+          path: ./publish
+
+  deploy:
+    runs-on: windows-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: dotnet-app
+          path: .
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'cn-lototo'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_CN_LOTOTO }}
+          package: .
