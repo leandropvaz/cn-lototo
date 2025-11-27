@@ -1,178 +1,476 @@
 ﻿@page "/home"
 @using Microsoft.AspNetCore.Authorization
-@using System.Globalization
-@* @attribute [Authorize] *@
+@using Microsoft.AspNetCore.Components.Authorization
+@using CN.Lototo.Application.Dto
+@using CN.Lototo.Application.Interfaces
+@inject IEquipamentoAppService EquipamentoAppService
+@inject PlantasService PlantaService
+@inject IJSRuntime Js
+
+@layout MainLayout
+
+<section class="content pt-3">
+    <div class="container-fluid">
+
+        <!-- TÍTULO / CONTEXTO PLANTA -->
+        <div class="row mb-2">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-bolt mr-1"></i>
+                        Consulta de energias perigosas por equipamento
+                    </h4>
+                    <small class="text-muted">
+                        Planta atual:
+                        @if (!string.IsNullOrEmpty(PlantaDescricao))
+                        {
+                            <strong>@PlantaDescricao</strong>
+                        }
+                        else
+                        {
+                            <span class="text-danger">Planta não definida nas claims</span>
+                        }
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <!-- CARD FILTROS -->
+            <div class="col-12">
+                <div class="card card-primary card-outline mb-3">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-search mr-1"></i>
+                            Filtros de pesquisa
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <EditForm OnValidSubmit="BuscarAsync" Model="@this">
+                            <div class="form-row">
+                                <div class="form-group col-12 col-md-3">
+                                    <label>Tag do equipamento</label>
+                                    <InputText class="form-control form-control-sm"
+                                               @bind-Value="FiltroTag"
+                                               placeholder="Ex.: FMTZ-100-BC11" />
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label>Nome / descrição do equipamento</label>
+                                    <InputText class="form-control form-control-sm"
+                                               @bind-Value="FiltroNomeEquipamento"
+                                               placeholder="Parte do nome..." />
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label>Tipo de energia</label>
+                                    <InputText class="form-control form-control-sm"
+                                               @bind-Value="FiltroTipoEnergia"
+                                               placeholder="Ex.: Elétrica, Pneumática..." />
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label>Descrição da energia perigosa</label>
+                                    <InputText class="form-control form-control-sm"
+                                               @bind-Value="FiltroDescricaoEnergia"
+                                               placeholder="Parte da descrição..." />
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-12 col-md-3">
+                                    <label>TAG disp. isolamento</label>
+                                    <InputText class="form-control form-control-sm"
+                                               @bind-Value="FiltroTagDispositivo"
+                                               placeholder="TAG dispositivo" />
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label>Localização dispositivo</label>
+                                    <InputText class="form-control form-control-sm"
+                                               @bind-Value="FiltroLocalizacaoDispositivo"
+                                               placeholder="Painel, área, sala..." />
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label>Dispositivo de isolamento</label>
+                                    <InputText class="form-control form-control-sm"
+                                               @bind-Value="FiltroDispositivoIsolamento"
+                                               placeholder="Disjuntor, válvula, etc." />
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label>Bloqueio</label>
+                                    <InputText class="form-control form-control-sm"
+                                               @bind-Value="FiltroBloqueio"
+                                               placeholder="Tipo de bloqueio" />
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="button"
+                                        class="btn btn-default btn-sm mr-2"
+                                        @onclick="LimparFiltros">
+                                    <i class="fas fa-eraser mr-1"></i> Limpar
+                                </button>
+                                <button type="submit"
+                                        class="btn btn-primary btn-sm"
+                                        disabled="@CarregandoEquipamentos">
+                                    <i class="fas fa-search mr-1"></i>
+                                    @(CarregandoEquipamentos ? "A pesquisar..." : "Pesquisar")
+                                </button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD RESULTADOS -->
+            <div class="col-12">
+                <div class="card card-info card-outline">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">
+                            <i class="fas fa-list mr-1"></i>
+                            Resultados
+                        </h3>
+
+                        <div class="card-tools">
+                            <small class="text-muted">
+                                @if (Resultados?.Any() == true)
+                                {
+                                    @($"{Resultados.Count} equipamento(s) encontrado(s)")
+                                }
+                                else if (!CarregandoEquipamentos && PlantIdAtual > 0)
+                                {
+                                    @("Nenhum equipamento encontrado para os filtros")
+                                }
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-2">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-sm mb-0 equip-table">
+                                <thead>
+                                    <tr class="thead-light">
+                                        <th colspan="5" class="text-center">I. Identificação</th>
+                                        <th colspan="4" class="text-center">II. Controlo energias</th>
+                                        <th rowspan="2" style="width: 5%;" class="text-center align-middle">Img</th>
+                                    </tr>
+                                    <tr class="thead-light">
+                                        <th style="width: 8%;">Tag</th>
+                                        <th style="width: 22%;">Equip.</th>
+                                        <th style="width: 6%;">Nº</th>
+                                        <th style="width: 12%;">Tipo energ.</th>
+                                        <th style="width: 18%;">Desc. energ.</th>
+
+                                        <th style="width: 10%;">TAG disp.</th>
+                                        <th style="width: 14%;">Loc. disp.</th>
+                                        <th style="width: 10%;">Disp.</th>
+                                        <th style="width: 8%;">Bloq.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (CarregandoEquipamentos)
+                                    {
+                                        <tr>
+                                            <td colspan="10" class="text-center text-muted py-3">
+                                                <i class="fas fa-sync-alt fa-spin mr-2"></i>
+                                                A carregar equipamentos da planta...
+                                            </td>
+                                        </tr>
+                                    }
+                                    else if (Resultados?.Any() == true)
+                                    {
+                                        @foreach (var e in Resultados)
+                                        {
+                                            <tr class="@(e.IsDeleted ? "table-danger" : "")">
+                                                <td>@e.Tag</td>
+                                                <td>@e.EquipmentName</td>
+                                                <td>@e.LineNumber</td>
+                                                <td>@e.EnergyType</td>
+                                                <td>@e.HazardDescription</td>
+
+                                                <td>@e.IsolationDeviceTag</td>
+                                                <td>@e.IsolationDeviceLocation</td>
+                                                <td>@e.IsolationDeviceDescription</td>
+                                                <td>@e.LockoutType</td>
+
+                                                <td class="text-center">
+                                                    @if (!string.IsNullOrEmpty(e.ImageBlobUrl))
+                                                    {
+                                                        <button class="btn btn-xs btn-outline-secondary"
+                                                                title="Ver imagem"
+                                                                @onclick="() => AbrirModalImagem(e)">
+                                                            <i class="fas fa-image"></i>
+                                                        </button>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="10" class="text-center text-muted py-3">
+                                                Nenhum registo para os filtros informados.
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        @* MODAL IMAGEM SIMPLES *@
+        @if (MostrarModalImagem)
+        {
+            <div class="modal fade show"
+                 tabindex="-1"
+                 role="dialog"
+                 style="display:block;"
+                 aria-modal="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-pw-blue">
+                            <h5 class="modal-title">
+                                <i class="fas fa-image mr-1"></i>
+                                @ImagemModalTitulo
+                            </h5>
+                            <button type="button"
+                                    class="close"
+                                    aria-label="Close"
+                                    @onclick="FecharModalImagem">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body text-center">
+                            @if (!string.IsNullOrEmpty(ImagemModalUrl))
+                            {
+                                <img src="@ImagemModalUrl" class="img-fluid" />
+                            }
+                            else
+                            {
+                                <p class="text-muted">Imagem não disponível.</p>
+                            }
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    @onclick="FecharModalImagem">
+                                Fechar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-backdrop fade show"></div>
+        }
+
+    </div>
+</section>
+
+<style>
+    .equip-table th,
+    .equip-table td {
+        font-size: 0.80rem;
+        padding: 0.25rem 0.45rem;
+    }
+
+    .equip-table thead th {
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+</style>
 
 @code {
-    private DateTime selectedDate = DateTime.Today;
-    private CultureInfo culturaBR = new CultureInfo("pt-BR");
+    [CascadingParameter] 
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
 
-    // Filtros de busca (baseado no ficheiro FMTZ-316-KI01)
-    private string? TagEquipamento { get; set; }
-    private string? TipoEnergia { get; set; }
-    private string? DescricaoRisco { get; set; }
-    private string? LocalizacaoDispositivo { get; set; }
+    private int PlantIdAtual { get; set; }
+    private string? PlantaDescricao { get; set; }
 
-    // Resultados da busca
-    private List<EquipamentoRiscoViewModel> Resultados { get; set; } = new();
+    // Filtros
+    private string? FiltroTag { get; set; }
+    private string? FiltroNomeEquipamento { get; set; }
+    private string? FiltroTipoEnergia { get; set; }
+    private string? FiltroDescricaoEnergia { get; set; }
+    private string? FiltroTagDispositivo { get; set; }
+    private string? FiltroLocalizacaoDispositivo { get; set; }
+    private string? FiltroDispositivoIsolamento { get; set; }
+    private string? FiltroBloqueio { get; set; }
 
-    protected override void OnInitialized()
+    // Dados
+    private List<EquipamentoDto> TodosEquipamentos { get; set; } = new();
+    private List<EquipamentoDto> Resultados { get; set; } = new();
+    private bool CarregandoEquipamentos { get; set; }
+
+    // Modal imagem
+    private bool MostrarModalImagem;
+    private string? ImagemModalUrl;
+    private string? ImagemModalTitulo;
+
+    protected override async Task OnInitializedAsync()
     {
-        // Se quiser, aqui pode carregar uma lista inicial (ex.: todos os registos ou vazio)
+        var authState = await AuthenticationStateTask;
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated != true)
+        {
+            await Js.InvokeVoidAsync("adminlteToasts.show", "error", "Erro", "Utilizador não autenticado.");
+            return;
+        }
+
+        // Tenta obter o plantId das claims
+        var plantClaim = user.Claims.FirstOrDefault(c =>
+            c.Type == "plantId" ||
+            c.Type == "PlantaId" ||
+            c.Type == "Plant");
+
+        if (plantClaim == null || !int.TryParse(plantClaim.Value, out var plantId) || plantId <= 0)
+        {
+            await Js.InvokeVoidAsync("adminlteToasts.show", "error", "Erro", "Planta não encontrada nas claims do utilizador.");
+            return;
+        }
+
+        PlantIdAtual = plantId;
+
+        // Carrega nome/código da planta (opcional, só pra exibir bonito)
+        try
+        {
+            var plantas = (await PlantaService.ListarAsync()).ToList();
+            var planta = plantas.FirstOrDefault(p => p.Id == PlantIdAtual);
+            if (planta != null)
+            {
+                PlantaDescricao = $"{planta.Nome} ({planta.Codigo})";
+            }
+        }
+        catch
+        {
+            // Se der erro aqui, não bloqueia a página, só não mostra nome
+        }
+
+        await CarregarEquipamentosAsync();
+        AplicarFiltros();
+    }
+
+    private async Task CarregarEquipamentosAsync()
+    {
+        if (PlantIdAtual <= 0)
+            return;
+
+        CarregandoEquipamentos = true;
+        try
+        {
+            TodosEquipamentos = (await EquipamentoAppService.GetByPlantAsync(PlantIdAtual))
+                .Where(e => !e.IsDeleted)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            await Js.InvokeVoidAsync("adminlteToasts.show", "error", "Erro", "Erro ao carregar equipamentos da planta.");
+        }
+        finally
+        {
+            CarregandoEquipamentos = false;
+        }
     }
 
     private Task BuscarAsync()
     {
-        // TODO: Chamar serviço / API / repositório que lê do ficheiro ou BD
-        // Exemplo de mock só para ver o layout a funcionar:
-        Resultados = new List<EquipamentoRiscoViewModel>
-        {
-            new()
-            {
-                TagEquipamento = "TAG-001",
-                TipoEnergia = "Elétrica",
-                DescricaoRisco = "Acionamento inadvertido do supressor",
-                LocalizacaoDispositivo = "Painel 01",
-                DispositivoIsolamento = "Disjuntor QD-01"
-            },
-            new()
-            {
-                TagEquipamento = "TAG-002",
-                TipoEnergia = "Pneumática",
-                DescricaoRisco = "Pressão positiva na linha",
-                LocalizacaoDispositivo = "Sala de válvulas",
-                DispositivoIsolamento = "Válvula gaveta VG-10"
-            }
-        };
-
+        AplicarFiltros();
         return Task.CompletedTask;
     }
 
-    // ViewModel simples para a tabela
-    private class EquipamentoRiscoViewModel
+    private void AplicarFiltros()
     {
-        public string? TagEquipamento { get; set; }
-        public string? TipoEnergia { get; set; }
-        public string? DescricaoRisco { get; set; }
-        public string? LocalizacaoDispositivo { get; set; }
-        public string? DispositivoIsolamento { get; set; }
+        var query = TodosEquipamentos.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(FiltroTag))
+        {
+            query = query.Where(e =>
+                (e.Tag ?? "").Contains(FiltroTag, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(FiltroNomeEquipamento))
+        {
+            query = query.Where(e =>
+                (e.EquipmentName ?? "").Contains(FiltroNomeEquipamento, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(FiltroTipoEnergia))
+        {
+            query = query.Where(e =>
+                (e.EnergyType ?? "").Contains(FiltroTipoEnergia, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(FiltroDescricaoEnergia))
+        {
+            query = query.Where(e =>
+                (e.HazardDescription ?? "").Contains(FiltroDescricaoEnergia, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(FiltroTagDispositivo))
+        {
+            query = query.Where(e =>
+                (e.IsolationDeviceTag ?? "").Contains(FiltroTagDispositivo, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(FiltroLocalizacaoDispositivo))
+        {
+            query = query.Where(e =>
+                (e.IsolationDeviceLocation ?? "").Contains(FiltroLocalizacaoDispositivo, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(FiltroDispositivoIsolamento))
+        {
+            query = query.Where(e =>
+                (e.IsolationDeviceDescription ?? "").Contains(FiltroDispositivoIsolamento, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(FiltroBloqueio))
+        {
+            query = query.Where(e =>
+                (e.LockoutType ?? "").Contains(FiltroBloqueio, StringComparison.OrdinalIgnoreCase));
+        }
+
+        Resultados = query.ToList();
+    }
+
+    private void LimparFiltros()
+    {
+        FiltroTag = null;
+        FiltroNomeEquipamento = null;
+        FiltroTipoEnergia = null;
+        FiltroDescricaoEnergia = null;
+        FiltroTagDispositivo = null;
+        FiltroLocalizacaoDispositivo = null;
+        FiltroDispositivoIsolamento = null;
+        FiltroBloqueio = null;
+
+        AplicarFiltros();
+    }
+
+    private void AbrirModalImagem(EquipamentoDto eq)
+    {
+        ImagemModalUrl = eq.ImageBlobUrl;
+        ImagemModalTitulo = $"{eq.Tag} - {eq.EquipmentName}";
+        MostrarModalImagem = true;
+    }
+
+    private void FecharModalImagem()
+    {
+        MostrarModalImagem = false;
+        ImagemModalUrl = null;
+        ImagemModalTitulo = null;
     }
 }
-
-<div class="container-fluid py-3">
-
-    <!-- Card de Filtros (motor de busca) -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm mb-3">
-                <div class="card-header">
-                    <strong>Pesquisa de Equipamentos / Energias Perigosas</strong>
-                </div>
-                <div class="card-body">
-                    <EditForm Model="@this" OnValidSubmit="@BuscarAsync">
-                        <div class="row g-3">
-
-                            <!-- Tag Equipamento -->
-                            <div class="col-12 col-md-3">
-                                <label class="form-label">Tag do Equipamento</label>
-                                <InputText class="form-control"
-                                           @bind-Value="TagEquipamento"
-                                           placeholder="Ex.: FMTZ-316-KI01" />
-                            </div>
-
-                            <!-- Tipo de energia perigosa -->
-                            <div class="col-12 col-md-3">
-                                <label class="form-label">Tipo de energia</label>
-                                <InputText class="form-control"
-                                           @bind-Value="TipoEnergia"
-                                           placeholder="Ex.: Elétrica, Pneumática" />
-                            </div>
-
-                            <!-- Descrição do risco -->
-                            <div class="col-12 col-md-3">
-                                <label class="form-label">Descrição do risco</label>
-                                <InputText class="form-control"
-                                           @bind-Value="DescricaoRisco"
-                                           placeholder="Parte da descrição..." />
-                            </div>
-
-                            <!-- Localização do dispositivo -->
-                            <div class="col-12 col-md-3">
-                                <label class="form-label">Localização do dispositivo</label>
-                                <InputText class="form-control"
-                                           @bind-Value="LocalizacaoDispositivo"
-                                           placeholder="Ex.: Painel, Sala, Área" />
-                            </div>
-
-                            <!-- Botão Buscar -->
-                            <div class="col-12 col-md-2 mt-2 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary w-100">
-                                    Buscar
-                                </button>
-                            </div>
-                        </div>
-                    </EditForm>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card de Resultados -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <strong>Resultados</strong>
-                    <small class="text-muted">
-                        @if (Resultados?.Any() == true)
-                        {
-                            @($"{Resultados.Count} registo(s) encontrado(s)")
-                        }
-                        else
-                        {
-                            @("Nenhum registo encontrado")
-                        }
-                    </small>
-                </div>
-                <div class="card-body p-0">
-                    <table class="table table-striped table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Tag Equipamento</th>
-                                <th>Tipo de energia</th>
-                                <th>Descrição do risco</th>
-                                <th>Localização dispositivo</th>
-                                <th>Dispositivo de isolamento</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Resultados?.Any() == true)
-                            {
-                                @foreach (var item in Resultados)
-                                {
-                                    <tr>
-                                        <td>@item.TagEquipamento</td>
-                                        <td>@item.TipoEnergia</td>
-                                        <td>@item.DescricaoRisco</td>
-                                        <td>@item.LocalizacaoDispositivo</td>
-                                        <td>@item.DispositivoIsolamento</td>
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted py-3">
-                                        Nenhum registo para os filtros informados.
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
