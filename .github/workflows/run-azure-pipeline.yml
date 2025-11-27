@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'cn-lototo'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E07398658FEB4EF188E52319B5DC360A }}
+          publish-profile: ${{ secrets.AZURE_CN_LOTOTO }}
           package: .
