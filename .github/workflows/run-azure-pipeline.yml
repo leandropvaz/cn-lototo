@@ -26,7 +26,7 @@ jobs:
 
       - name: Publish
         # Se o projeto NÃO está na raiz, troca ./SeuProjeto.csproj pelo caminho certo
-        run: dotnet publish ./SeuProjeto.csproj -c Release -o ./publish --no-build
+        run: dotnet publish ./CN.Lototo.Web.csproj -c Release -o ./publish --no-build
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
