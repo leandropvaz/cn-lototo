@@ -250,15 +250,37 @@
                             </button>
                         </div>
 
-                        <div class="modal-body text-center">
-                            @if (!string.IsNullOrEmpty(ImagemModalUrl))
-                            {
-                                <img src="@ImagemModalUrl" class="img-fluid" />
-                            }
-                            else
-                            {
-                                <p class="text-muted">Imagem não disponível.</p>
-                            }
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-7 text-center mb-3 mb-md-0">
+                                    @if (!string.IsNullOrEmpty(ImagemModalUrl))
+                                    {
+                                        <img src="@ImagemModalUrl" class="img-fluid" />
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">Imagem não disponível.</p>
+                                    }
+                                </div>
+                                <div class="col-md-5">
+                                    <h6 class="mb-2">
+                                        <i class="fas fa-sticky-note mr-1"></i>
+                                        Notas
+                                    </h6>
+                                    @if (!string.IsNullOrWhiteSpace(ImagemModalNotas))
+                                    {
+                                        <div class="border rounded p-4 bg-warning" style="min-height: 80px;">
+                                            @ImagemModalNotas
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted mb-0">
+                                            Nenhuma nota encontrada para esta imagem.
+                                        </p>
+                                    }
+                                </div>
+                            </div>
                         </div>
 
                         <div class="modal-footer">
@@ -316,6 +338,7 @@
     private bool MostrarModalImagem;
     private string? ImagemModalUrl;
     private string? ImagemModalTitulo;
+    private string? ImagemModalNotas;
 
     protected override async Task OnInitializedAsync()
     {
@@ -463,6 +486,7 @@
     {
         ImagemModalUrl = eq.ImageBlobUrl;
         ImagemModalTitulo = $"{eq.Tag} - {eq.EquipmentName}";
+        ImagemModalNotas = eq.ImageNotes;
         MostrarModalImagem = true;
     }
 
@@ -471,5 +495,6 @@
         MostrarModalImagem = false;
         ImagemModalUrl = null;
         ImagemModalTitulo = null;
+        ImagemModalNotas = null;
     }
 }
