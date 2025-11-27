@@ -13,20 +13,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up .NET
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'   # ajusta pra versão que usas
+          dotnet-version: '10.0.x'   # Ajuste conforme versão do teu projeto
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore ./CN.Lototo.Web/CN.Lototo.Web.csproj
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build ./CN.Lototo.Web/CN.Lototo.Web.csproj --configuration Release --no-restore
 
       - name: Publish
-        # Se o projeto NÃO está na raiz, troca ./SeuProjeto.csproj pelo caminho certo
-        run: dotnet publish ./CN.Lototo.Web.csproj -c Release -o ./publish --no-build
+        run: dotnet publish ./CN.Lototo.Web/CN.Lototo.Web.csproj -c Release -o ./publish --no-build
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
