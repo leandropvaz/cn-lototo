@@ -1,5 +1,41 @@
 ﻿@page "/not-found"
-@layout MainLayout
+@layout EmptyLayout
 
-<h3>Not Found</h3>
-<p>Sorry, the content you are looking for does not exist.</p>
+@inject NavigationManager Nav
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="row w-100 justify-content-center">
+        <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+
+            <div class="card shadow-lg border-secondary">
+                <div class="card-header bg-secondary text-white d-flex align-items-center">
+                    <i class="fas fa-search-minus mr-2"></i>
+                    <h5 class="mb-0">Página não encontrada</h5>
+                </div>
+
+                <div class="card-body">
+                    <p>
+                        O conteúdo que está a tentar acesssar não existe, foi movido ou está indisponível.
+                    </p>
+                    <p>
+                        Verifique o endereço ou volte para o início.
+                    </p>
+
+                    <button class="btn btn-primary btn-block mt-2"
+                            @onclick="VoltarHome">
+                        <i class="fas fa-arrow-left mr-1"></i>
+                        Voltar à página inicial
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@code {
+    private void VoltarHome()
+    {
+        Nav.NavigateTo("/home", forceLoad: true);
+    }
+}

@@ -5,6 +5,7 @@
 @inject IJSRuntime Js
 @* @attribute [Authorize(Roles = "Administrador,SuperGestor")] *@
 @layout MainLayout
+@inject NavigationManager Nav
 
 <section class="content pt-3">
     <div class="container-fluid">
@@ -31,7 +32,7 @@
                     </div>
 
                     <div class="card-body">
-                        <EditForm Model="@PlantaForm" OnValidSubmit="SalvarPlantaAsync" FormName="PlantaForm">
+                        <EditForm Model="@PlantaForm" OnValidSubmit="SalvarPlantaAsync" FormName="PlantaForm" Enhance="false">
                             <DataAnnotationsValidator />
                             <ValidationSummary class="text-danger mb-2" />
 
@@ -50,10 +51,40 @@
                                 <ValidationMessage For="@(() => PlantaForm.Codigo)" class="text-danger" />
                             </div>
 
-                            <!-- Localização -->
+                            <!-- Localização (select simples com estados) -->
                             <div class="form-group">
                                 <label>Localização</label>
-                                <InputText class="form-control" @bind-Value="PlantaForm.Localizacao" />
+                                <InputSelect class="form-control" @bind-Value="PlantaForm.Localizacao">
+                                    <option value="">-- selecione o estado --</option>
+                                    <option value="Acre">Acre</option>
+                                    <option value="Alagoas">Alagoas</option>
+                                    <option value="Amapá">Amapá</option>
+                                    <option value="Amazonas">Amazonas</option>
+                                    <option value="Bahia">Bahia</option>
+                                    <option value="Ceará">Ceará</option>
+                                    <option value="Distrito Federal">Distrito Federal</option>
+                                    <option value="Espírito Santo">Espírito Santo</option>
+                                    <option value="Goiás">Goiás</option>
+                                    <option value="Maranhão">Maranhão</option>
+                                    <option value="Mato Grosso">Mato Grosso</option>
+                                    <option value="Mato Grosso do Sul">Mato Grosso do Sul</option>
+                                    <option value="Minas Gerais">Minas Gerais</option>
+                                    <option value="Pará">Pará</option>
+                                    <option value="Paraíba">Paraíba</option>
+                                    <option value="Paraná">Paraná</option>
+                                    <option value="Pernambuco">Pernambuco</option>
+                                    <option value="Piauí">Piauí</option>
+                                    <option value="Rio de Janeiro">Rio de Janeiro</option>
+                                    <option value="Rio Grande do Norte">Rio Grande do Norte</option>
+                                    <option value="Rio Grande do Sul">Rio Grande do Sul</option>
+                                    <option value="Rondônia">Rondônia</option>
+                                    <option value="Roraima">Roraima</option>
+                                    <option value="Santa Catarina">Santa Catarina</option>
+                                    <option value="São Paulo">São Paulo</option>
+                                    <option value="Sergipe">Sergipe</option>
+                                    <option value="Tocantins">Tocantins</option>
+
+                                </InputSelect>
                                 <ValidationMessage For="@(() => PlantaForm.Localizacao)" class="text-danger" />
                             </div>
 
@@ -129,7 +160,6 @@
                             </div>
 
                             <div class="btn-group btn-group-sm">
-
                                 <select class="form-control form-control-sm ml-2" style="width: 80px;"
                                         @bind="TamanhoPagina">
                                     <option value="5">5</option>
@@ -227,37 +257,53 @@
         @if (MostrarModalExcluir)
         {
             <div class="modal fade show" tabindex="-1" role="dialog" style="display:block;" aria-modal="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header bg-danger">
-                            <h5 class="modal-title">
-                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content confirm-modal">
+
+                        <!-- Cabeçalho -->
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title mb-0">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
                                 Confirmar exclusão
                             </h5>
-                            <button type="button" class="close" aria-label="Close" @onclick="FecharModalExcluir">
+                            <button type="button"
+                                    class="close text-white"
+                                    aria-label="Close"
+                                    @onclick="FecharModalExcluir">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
+
+                        <!-- Corpo -->
                         <div class="modal-body">
-                            <p>
-                                Tem certeza que deseja excluir a planta
+                            <p class="mb-2">
+                                Tem certeza que deseja excluir
                                 <strong>@PlantaForm.Nome</strong>?
                             </p>
                         </div>
-                        <div class="modal-footer justify-content-between">
-                            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="FecharModalExcluir">
+
+                        <!-- Rodapé -->
+                        <div class="modal-footer d-flex justify-content-between">
+                            <button type="button"
+                                    class="btn btn-outline-secondary btn-sm"
+                                    @onclick="FecharModalExcluir">
                                 <i class="fas fa-times mr-1"></i> Não
                             </button>
-                            <button type="button" class="btn btn-danger btn-sm" @onclick="ConfirmarExclusaoAsync">
+
+                            <button type="button"
+                                    class="btn btn-danger btn-sm"
+                                    @onclick="ConfirmarExclusaoAsync">
                                 <i class="fas fa-trash-alt mr-1"></i> Sim, excluir
                             </button>
                         </div>
+
                     </div>
                 </div>
             </div>
 
             <div class="modal-backdrop fade show"></div>
         }
+
 
     </div>
 </section>
@@ -333,10 +379,32 @@
         font-size: 0.75rem;
         padding: 0.2rem 0.4rem;
     }
+
+    /* Modal confirmação */
+    .confirm-modal {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .confirm-modal .modal-header {
+            border-bottom: none;
+            padding: 12px 16px;
+        }
+
+        .confirm-modal .modal-body {
+            font-size: 0.92rem;
+            padding: 16px;
+        }
+
+        .confirm-modal .modal-footer {
+            border-top: none;
+            padding: 12px 16px;
+        }
 </style>
 
 @code {
-    // ViewModel da tela (UI)
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthStateTask { get; set; } = default!;
     public class PlantaViewModel
     {
         public int Id { get; set; }
@@ -347,18 +415,16 @@
         [Required(ErrorMessage = "O código é obrigatório.")]
         public string Codigo { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "A localização é obrigatória.")]
         public string Localizacao { get; set; } = string.Empty;
 
         public bool Ativa { get; set; } = true;
     }
 
-    // Formulário atual (cadastro/edição)
     private PlantaViewModel PlantaForm { get; set; } = new();
 
-    // Lista carregada do banco (via service)
     private List<PlantaViewModel> TodasAsPlantas { get; set; } = new();
 
-    // Filtro / pesquisa
     private string TermoPesquisa { get; set; } = string.Empty;
     private int PaginaAtual { get; set; } = 1;
     private int TamanhoPagina { get; set; } = 10;
@@ -366,10 +432,8 @@
     private bool IsEditMode { get; set; } = false;
     private int? PlantaEmEdicaoId { get; set; }
 
-    // Modal de exclusão
     private bool MostrarModalExcluir { get; set; } = false;
 
-    // Listas derivadas
     private List<PlantaViewModel> PlantasFiltradas =>
         string.IsNullOrWhiteSpace(TermoPesquisa)
             ? TodasAsPlantas
@@ -390,9 +454,16 @@
             ? 1
             : (int)Math.Ceiling(PlantasFiltradas.Count / (double)TamanhoPagina);
 
-    // Carrega do banco na entrada
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthStateTask;
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated != true)
+        {
+            Nav.NavigateTo("/restricted", forceLoad: true);
+        }
+
         await CarregarPlantasAsync();
     }
 
@@ -414,7 +485,6 @@
         PaginaAtual = 1;
     }
 
-    // Helpers de toast
     private async Task ShowToastSucessoAsync(string mensagem)
     {
         await Js.InvokeVoidAsync("adminlteToasts.show", "success", "Sucesso", mensagem);
@@ -425,7 +495,6 @@
         await Js.InvokeVoidAsync("adminlteToasts.show", "error", "Erro", mensagem);
     }
 
-    // Salvar (insert/update)
     private async Task SalvarPlantaAsync()
     {
         var isEdicao = IsEditMode && PlantaEmEdicaoId.HasValue;
@@ -434,7 +503,6 @@
         {
             if (isEdicao)
             {
-                // UPDATE
                 var dto = new PlantasDto
                 {
                     Id = PlantaEmEdicaoId.Value,
@@ -448,7 +516,6 @@
             }
             else
             {
-                // INSERT
                 var dto = new PlantasDto
                 {
                     Nome = PlantaForm.Nome,
@@ -460,7 +527,6 @@
                 await PlantaService.CriarAsync(dto);
             }
 
-            // Reset de formulário e estado
             PlantaForm = new PlantaViewModel();
             IsEditMode = false;
             PlantaEmEdicaoId = null;
@@ -519,7 +585,6 @@
 
         try
         {
-            // Soft delete via service (Ativa = false)
             await PlantaService.RemoverAsync(PlantaEmEdicaoId.Value);
 
             PlantaForm = new PlantaViewModel();
@@ -554,7 +619,6 @@
         PaginaAtual = 1;
     }
 
-    // Paginação
     private void PaginaAnterior()
     {
         if (PaginaAtual > 1)
@@ -573,7 +637,6 @@
             PaginaAtual = pagina;
     }
 
-    // Exportações – ainda stubs
     private Task ExportarCsvAsync()
     {
         Console.WriteLine("Exportar CSV ainda não implementado.");

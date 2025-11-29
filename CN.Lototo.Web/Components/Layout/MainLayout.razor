@@ -10,204 +10,168 @@
 <div class="wrapper">
 
     <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand navbar-dark bg-pw-blue">
+    <nav class="main-header navbar navbar-expand navbar-dark bg-pw-blue-light">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
 
-        <!-- Left navbar (info: data, planta, usuário) -->
-        <ul class="navbar-nav">
-            <!-- Data -->
-            <li class="nav-item d-none d-sm-inline-block">
-                <span class="nav-link">
+            <!-- Esquerda: Logo Cimento Nacional -->
+            <div class="d-flex align-items-center">
+                <img src="images/CN.png"
+                     alt="Cimento Nacional"
+                     class="brand-image mr-2"
+                     style="height: 25px;" />
+            </div>
+
+            <!-- Centro: Data, Planta, Usuário -->
+            <div class="d-flex align-items-center justify-content-center flex-grow-1 top-center-info">
+                <span class="nav-link d-flex align-items-center m-0">
                     <i class="far fa-calendar-alt mr-1"></i>
                     @DateTime.Now.ToString("dd/MM/yyyy")
                 </span>
-            </li>
-
-            <!-- Planta -->
-            <li class="nav-item d-none d-sm-inline-block">
-                <span class="nav-link">
+                        @if (!IsSuperGestor)
+                        {
+                <span class="nav-link d-flex align-items-center m-0">
                     <i class="fas fa-map-marker-alt mr-1"></i>
                     @PlantaAtual
                 </span>
-            </li>
+                }
 
-            <!-- Usuário -->
-            <li class="nav-item d-none d-sm-inline-block">
-                <span class="nav-link">
+                <span class="nav-link d-flex align-items-center m-0">
                     <i class="fas fa-user-circle mr-1"></i>
-                    @UserName
+                    <span>@UserName</span>
                 </span>
-            </li>
-        </ul>
-
-        <!-- Right navbar (colapsar + sair) -->
-        <ul class="navbar-nav ml-auto">
-
-            <!-- Botão de colapsar sidebar -->
-@*             <li class="nav-item">
-                <a class="nav-link" data-widget="pushmenu" href="#" role="button">
-                    <i class="fas fa-bars"></i>
-                </a>
-            </li> *@
-
-            <!-- Botão de saída -->
-            <li class="nav-item">
-                <a class="nav-link" href="#" @onclick="Logout" role="button" title="Sair">
-                    <i class="fas fa-door-open"></i>
-                </a>
-            </li>
-        </ul>
-    </nav>
-    <!-- /.navbar -->
-
-    <!-- Main Sidebar Container -->
-    <aside class="main-sidebar bg-seugarcom elevation-3">
-        <div class="sidebar bg-seugarcom">
-            <!-- Logo -->
-            <div class="sidebar-brand d-flex flex-column align-items-center pb-2 border-bottom">
-                <img src="images/CN.png" class="brand-image mb-4 mt-3" width="200" />
             </div>
 
-            <!-- Sidebar Menu -->
-            <nav class="mt-2">
-                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Direita: Botão Sair -->
+            <div class="d-flex align-items-center">
+                @if (!string.IsNullOrWhiteSpace(UserName))
+                {
+                    <button class="btn btn-sm btn-outline-light"
+                            @onclick="Logout"
+                            title="Sair">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Sair
+                    </button>
+                }
+            </div>
+        </div>
+    </nav>
+    <!-- /.navbar -->
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
 
-                    <!-- MENU: Equipamentos (todos que tiverem acesso veem) -->
+        <!-- Abas de navegação (AdminLTE nav-tabs style) -->
+        <div class="content-header pb-0">
+            <div class="container-fluid">
+                <ul class="nav nav-tabs nav-fill bg-white" style="border-bottom: 1px solid #dee2e6;">
+
+                    <!-- Home (sempre visível e habilitada) -->
                     <li class="nav-item">
-                        <a href="/home" class="nav-link">
-                            <i class="nav-icon fas fa-tools"></i>
-                            <p>Equipamentos</p>
+                        <a class="@GetTabClass("/home")" href="/home">
+                            <i class="fas fa-search mr-1"></i>
+                            Pesquisar
                         </a>
+                    </li>
 
+                    <!-- Equipamentos -->
+                    <li class="nav-item">
                         @if (IsAdmin || IsSuperGestor)
                         {
-                            <a href="/equipamentos" class="nav-link ml-4">
-                                <i class="fas fa-plus nav-icon"></i>
-                                <p style="margin-left: 2px;">Gerenciar</p>
+                            <a class="@GetTabClass("/equipamentos")" href="/equipamentos">
+                                <i class="fas fa-tools mr-1"></i>
+                                Equipamentos
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="nav-link disabled"
+                               href="#"
+                               tabindex="-1"
+                               aria-disabled="true"
+                               title="Acesso restrito ao administrador"
+                               data-toggle="tooltip">
+                                <i class="fas fa-tools mr-1"></i>
+                                Equipamentos
                             </a>
                         }
                     </li>
 
-
-                    <!-- MENUS ESPECÍFICOS PARA ADMINISTRADOR -->
-                    @if (IsAdmin || IsSuperGestor)
-                    {
-                        <!-- Usuário do sistema -->
-                        <li class="nav-item">
-                            <a href="/usuarios" class="nav-link">
-                                <i class="nav-icon fas fa-users-cog"></i>
-                                <p>
-                                    Usuários
-
-                                </p>
+                    <!-- Usuários -->
+                    <li class="nav-item">
+                        @if (IsAdmin || IsSuperGestor)
+                        {
+                            <a class="@GetTabClass("/usuarios")" href="/usuarios">
+                                <i class="fas fa-users-cog mr-1"></i>
+                                Usuários
                             </a>
-                        </li>
-                    }
-
-                    <!-- MENUS ESPECÍFICOS PARA SUPER GESTOR -->
-                    @if (IsSuperGestor)
-                    {
-                        <!-- Planta -->
-                        <li class="nav-item">
-                            <a href="/plantas" class="nav-link">
-                                <i class="nav-icon fas fa-industry"></i>
-                                <p>
-                                    Plantas
-                                </p>
+                        }
+                        else
+                        {
+                            <a class="nav-link disabled"
+                               href="#"
+                               tabindex="-1"
+                               aria-disabled="true"
+                               title="Acesso restrito ao administrador"
+                               data-toggle="tooltip">
+                                <i class="fas fa-users-cog mr-1"></i>
+                                Usuários
                             </a>
-                        </li>
+                        }
+                    </li>
 
-                        <!-- Usuário ADM -->
-                       @*  <li class="nav-item">
-                            <a href="/usuarios-adm" class="nav-link">
-                                <i class="nav-icon fas fa-user-shield"></i>
-                                <p>
-                                    Usuários ADM
-                                </p>
+                    <!-- Plantas -->
+                    <li class="nav-item">
+                        @if (IsSuperGestor)
+                        {
+                            <a class="@GetTabClass("/plantas")" href="/plantas">
+                                <i class="fas fa-industry mr-1"></i>
+                                Plantas
                             </a>
-                        </li> *@
-                    }
-
+                        }
+                        else
+                        {
+                            <a class="nav-link disabled"
+                               href="#"
+                               tabindex="-1"
+                               aria-disabled="true"
+                               title="Acesso restrito ao Super Gestor"
+                               data-toggle="tooltip">
+                                <i class="fas fa-industry mr-1"></i>
+                                Plantas
+                            </a>
+                        }
+                    </li>
                 </ul>
-            </nav>
-
-
-            <div class="sidebar-footer text-center mt-auto py-3">
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
- 
-                <img src="images/logo.png"
-                     alt="Power Wave Solutions"
-                     class="img-fluid sidebar-logo-footer" />
+            </div>
         </div>
-        </div>
-    </aside>
 
-    <!-- Content Wrapper -->
-    <div class="content-wrapper">
-        @Body
+
+        <!-- Conteúdo das páginas -->
+        <section class="content pt-2">
+            @Body
+        </section>
     </div>
 
     <!-- Footer -->
-    <footer class="main-footer" style="background-color: #006CB5; color: white;">
-        Power Wave Solutions - Todos os direitos reservados
-        <div class="float-right d-none d-sm-inline-block">
-            Versão 1.0.0
+    <footer class="main-footer bg-pw-blue-light">
+        <div class="d-flex justify-content-center align-items-center">
+
+            <a href="https://www.powerwavesolutions.net"
+               target="_blank"
+               class="d-flex align-items-center footer-link">
+
+                <img src="images/logo2.png"
+                     alt="Power Wave Solutions"
+                     class="footer-logo mr-2" style="height: 25px;" />
+
+                <img src="images/logo3.png"
+                     alt="Power Wave Solutions"
+                     class="footer-logo" style="height: 25px;" />
+            </a>
+
         </div>
     </footer>
+
+
     <style>
-
-   /*      /* ======== TOPO (NAVBAR) COMPACTA ======== */
-        .main-header.navbar {
-            height: 42px !important;
-            min-height: 42px !important;
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-        }
-
-        .main-header .nav-link {
-            padding-top: 4px !important;
-            padding-bottom: 4px !important;
-            font-size: 0.78rem !important;
-        }
-
-        /* Ícones menores */
-        .main-header i {
-            font-size: 0.85rem !important;
-        }
-
-        /* ======== RODAPÉ MAIS BAIXO ======== */
-/*         .main-footer {
-            padding: 4px 10px !important;
-            font-size: 0.75rem !important;
-            height: 32px !important;
-        }
- */
-        /* ======== SIDEBAR COMPACTA ======== */
-        .main-sidebar {
-            padding-top: 6px !important;
-        }
-
-        .sidebar .nav-link {
-            padding: 4px 10px !important;
-            font-size: 0.78rem !important;
-        }
-
-        .sidebar .nav-icon {
-            font-size: 0.85rem !important;
-            margin-right: 6px !important;
-        }
-
-        .sidebar-brand img {
-            max-width: 150px !important;
-            margin-bottom: 10px !important;
-        } 
-
         /* ======== GERAL – REDUZIR FONTE E ESPAÇAMENTO ======== */
 
         body, label, p, span, small {
@@ -248,52 +212,67 @@
             padding: 0.25rem !important;
             font-size: 0.75rem !important;
         }
-        /* ====== LARGURA DA SIDEBAR MAIS ESTREITA ====== */
-        .main-sidebar,
-        .main-sidebar::before {
-            width: 170px !important; /* ajusta aqui: 160, 170, 180... */
+
+        /* Cores */
+        .bg-pw-blue {
+            background-color: #006CB5 !important;
+            color: white !important;
         }
 
-        /* faz o conteúdo respeitar a nova largura */
-        .content-wrapper,
-        .main-footer,
-        .main-header {
-            margin-left: 170px !important; /* mesmo valor da sidebar */
+        .bg-pw-blue-light {
+            /* azul mais claro só para o topo */
+            background-color: #1F86D1 !important;
+            color: white !important;
         }
 
-        /* Deixa os itens do menu mais compactos e evita quebra estranha */
-        .nav-sidebar .nav-link p {
-            font-size: 0.78rem !important;
-            white-space: nowrap;
+        /* Full width sem sidebar */
+        .sidebar-mini .main-header,
+        .sidebar-mini .main-footer,
+        .sidebar-mini .content-wrapper,
+        .content-wrapper {
+            margin-left: 0 !important;
         }
 
-        .nav-sidebar .nav-link {
-            padding-right: 6px !important;
-            padding-left: 8px !important;
+        /* Centralização melhor dos itens do topo */
+        .top-center-info .nav-link {
+            padding-top: 0;
+            padding-bottom: 0;
+            margin: 0 0.75rem;
         }
 
-        .sidebar-brand img {
-            max-width: 130px !important; /* logo mais estreita pra caber bem */
-        }
-        /* Alinhar itens do lado esquerdo da navbar ao centro vertical */
-        .navbar-nav > li > .nav-link {
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-            height: 40px; /* mesmo tamanho da navbar reduzida */
-            display: flex !important;
-            align-items: center !important;
-            font-size: 0.80rem !important; /* opcional, reduz fonte */
+        /* Estilo das abas (AdminLTE-like) */
+        .nav-tabs .nav-link {
+            border-radius: 0.25rem 0.25rem 0 0;
+            border: 1px solid transparent;
+            color: #495057;
         }
 
-            /* Ícones também centralizados */
-            .navbar-nav > li > .nav-link i {
-                line-height: 1;
-                margin-right: 4px;
+            .nav-tabs .nav-link:hover {
+                border-color: #e9ecef #e9ecef #dee2e6;
+                background-color: #f8f9fa;
             }
+
+            .nav-tabs .nav-link.active {
+                color: #006CB5;
+                background-color: #ffffff;
+                border-color: #dee2e6 #dee2e6 #ffffff;
+                font-weight: 600;
+            }
+
+            /* Abas desabilitadas */
+            .nav-tabs .nav-link.disabled {
+                color: #adb5bd !important;
+                cursor: not-allowed !important;
+                background-color: #f8f9fa !important;
+                border-color: transparent !important;
+            }
+
+        .main-header .nav-link {
+            display: flex;
+            align-items: center;
+        }
     </style>
 </div>
-
-
 
 @code {
     [CascadingParameter]
@@ -325,7 +304,7 @@
 
             var plantaId = user.FindFirst("plantaId")?.Value;
             PlantaAtual = !string.IsNullOrWhiteSpace(plantaId)
-                ? $"Planta {plantaId}"
+                ? $"Planta {user.FindFirst("PlantaNome")?.Value}"
                 : "Sem planta";
 
             IsAdmin = user.IsInRole("Administrador");
@@ -339,9 +318,32 @@
             IsSuperGestor = false;
         }
     }
+
     private async Task Logout()
     {
         await AuthService.LogoutAsync();
-        Nav.NavigateTo("/", forceLoad: true); // volta para o login limpando tudo
+        Nav.NavigateTo("/", forceLoad: true);
     }
+
+    // Define a classe da aba (ativa/normal/desabilitada)
+    private string GetTabClass(string href, bool enabled = true)
+    {
+        var baseClass = "nav-link";
+
+        if (!enabled)
+            return baseClass + " disabled";
+
+        var currentPath = new Uri(Nav.Uri).AbsolutePath.TrimEnd('/').ToLowerInvariant();
+        var targetPath = Nav.ToAbsoluteUri(href).AbsolutePath.TrimEnd('/').ToLowerInvariant();
+
+        if (currentPath == string.Empty)
+            currentPath = "/";
+
+        return currentPath == targetPath
+            ? baseClass + " active"
+            : baseClass;
+    }
+
+    // Overload para as abas sempre habilitadas (Home)
+    private string GetTabClass(string href) => GetTabClass(href, true);
 }

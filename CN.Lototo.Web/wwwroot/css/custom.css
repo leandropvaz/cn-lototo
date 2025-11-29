@@ -124,3 +124,122 @@
     transform: scale(0.75); /* encolhe o radio control */
     margin-top: 0.15rem;
 }
+
+/* ======== GERAL – REDUZIR FONTE E ESPAÇAMENTO ======== */
+
+body,
+label,
+p,
+span,
+small {
+    font-size: 0.80rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: 0.95rem;
+}
+
+/* Inputs menores */
+.form-control {
+    font-size: 0.78rem;
+    height: calc(1.4rem + 2px);
+    padding: 0.22rem 0.45rem;
+}
+
+/* Botões menores */
+.btn {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+}
+
+.btn-sm {
+    font-size: 0.72rem;
+    padding: 0.2rem 0.45rem;
+}
+
+.btn-xs {
+    font-size: 0.68rem;
+    padding: 0.15rem 0.35rem;
+}
+
+/* Tabela compacta */
+table.table td,
+table.table th {
+    padding: 0.25rem;
+    font-size: 0.75rem;
+}
+
+/* ======== NAVBAR MAIS COMPACTA ======== */
+
+.lototo-layout .main-header .navbar-nav > .nav-item > .nav-link {
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    font-size: 0.80rem;
+}
+
+    .lototo-layout .main-header .navbar-nav > .nav-item > .nav-link i {
+        font-size: 0.85rem;
+        line-height: 1;
+        margin-right: 4px;
+    }
+
+/* ======== SIDEBAR MAIS COMPACTA ======== */
+
+.lototo-layout .nav-sidebar .nav-link {
+    padding: 4px 8px;
+    font-size: 0.78rem;
+}
+
+.lototo-layout .nav-sidebar .nav-icon {
+    font-size: 0.85rem;
+    margin-right: 6px;
+}
+
+.lototo-layout .sidebar .brand-image {
+    max-width: 130px;
+}
+
+/* ====== LARGURA DA SIDEBAR – APENAS EM TELAS MÉDIAS/GRANDES ====== */
+
+/* ====== LARGURA DA SIDEBAR – APENAS EM TELAS MÉDIAS/GRANDES ====== */
+@media (min-width: 768px) {
+
+    /* Largura real da sidebar */
+    body .lototo-layout .main-sidebar,
+    body .lototo-layout .main-sidebar::before {
+        width: 180px !important; /* ajusta aqui: 160, 170, 190... */
+    }
+
+    /* Conteúdo alinhado à mesma largura */
+    body .lototo-layout .content-wrapper,
+    body .lototo-layout .main-footer,
+    body .lototo-layout .main-header {
+        margin-left: 180px !important; /* MESMO valor da sidebar */
+    }
+}
+
+/* Em telas pequenas, padrão do AdminLTE */
+@media (max-width: 767.98px) {
+    body .lototo-layout .content-wrapper,
+    body .lototo-layout .main-footer,
+    body .lototo-layout .main-header {
+        margin-left: 0 !important;
+    }
+}
+.content-wrapper {
+    margin-left: 0 !important;
+}
+
+/* Zerar margem que o AdminLTE põe quando há sidebar */
+.main-header,
+.main-footer {
+    margin-left: 0 !important;
+}

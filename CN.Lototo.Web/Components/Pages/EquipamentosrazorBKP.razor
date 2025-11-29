@@ -1,4 +1,4 @@
-﻿@page "/equipamentos"
+﻿@page "/equipamentosold"
 @using System.ComponentModel.DataAnnotations
 @using CN.Lototo.Application.Dto
 @using CN.Lototo.Application.Interfaces
@@ -13,9 +13,10 @@
 <section class="content pt-3">
     <div class="container-fluid">
 
-        <!-- LINHA 1 – WIZARD (100% LARGURA) -->
-        <div class="row mb-3">
-            <div class="col-12">
+        <div class="row">
+
+            @* COLUNA ESQUERDA: WIZARD CADASTRO / IMPORTAÇÃO *@
+            <div class="col-12 col-lg-4">
                 <div class="card card-primary card-outline">
                     <div class="card-header">
                         <h3 class="card-title">
@@ -294,7 +295,7 @@
                         {
                             <p>
                                 Importação/cadastro concluído.
-                                A lista de equipamentos foi atualizada na linha abaixo.
+                                A lista de equipamentos foi atualizada na coluna à direita.
                             </p>
                             <p class="text-muted mb-0">
                                 Pode continuar a cadastrar manualmente ou importar novos arquivos.
@@ -333,11 +334,9 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- LINHA 2 – LISTA (100% LARGURA) -->
-        <div class="row">
-            <div class="col-12">
+            @* COLUNA DIREITA – LISTA *@
+            <div class="col-12 col-lg-8">
                 <div class="card card-info card-outline mb-3">
                     <div class="card-header">
                         <h3 class="card-title">
@@ -503,9 +502,10 @@
                     </div>
                 </div>
             </div>
+
         </div>
 
-        @* MODAL IMAGEM *@
+        @* MODAL IMAGEM (modernizado com balão de notas) *@
         @if (MostrarModalImagem)
         {
             <div class="modal fade show"
@@ -575,6 +575,7 @@
         }
 
         @* MODAL CONFIRMAÇÃO EXCLUSÃO *@
+        @* MODAL CONFIRMAÇÃO EXCLUSÃO *@
         @if (MostrarModalConfirmacaoExclusao && EquipamentoParaExcluir is not null)
         {
             <div class="modal fade show"
@@ -623,6 +624,7 @@
             </div>
             <div class="modal-backdrop fade show"></div>
         }
+
 
     </div>
 </section>
@@ -693,6 +695,7 @@
         padding: 0.2rem 0.4rem;
     }
 
+    /* Modal de imagem mais compacto */
     .modal-image .modal-content {
         border-radius: 0.75rem;
     }
@@ -732,6 +735,7 @@
             border-color: transparent #f1c453 transparent transparent;
         }
 
+    /* Modal confirmação de exclusão mais "clean" */
     .confirm-modal {
         border-radius: 0.75rem;
     }
@@ -783,8 +787,10 @@
 
         public string? FactoryName { get; set; }
 
+        // String que vai para o DTO/BD
         public string? RevisionInfo { get; set; }
 
+        // Campo de data para o componente InputDate
         [DataType(DataType.Date)]
         public DateTime? RevisionDate { get; set; }
 
@@ -845,6 +851,7 @@
     private string? ImagemModalTitulo;
     private string? ImagemModalNotas;
 
+    // Modal de confirmação de exclusão
     private bool MostrarModalConfirmacaoExclusao;
     private EquipamentoDto? EquipamentoParaExcluir;
 
@@ -1016,6 +1023,7 @@
 
         try
         {
+            // Preenche a string RevisionInfo com a data, se existir
             Manual.RevisionInfo = Manual.RevisionDate.HasValue
                 ? Manual.RevisionDate.Value.ToString("dd/MM/yyyy")
                 : null;
@@ -1148,6 +1156,7 @@
             ImageNotes = dto.ImageNotes
         };
 
+        // Tenta converter a RevisionInfo existente em data
         Manual.RevisionDate = ParseNullableDate(dto.RevisionInfo);
 
         ImagemManualFile = null;

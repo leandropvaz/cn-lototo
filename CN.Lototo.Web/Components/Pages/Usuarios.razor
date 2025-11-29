@@ -7,7 +7,7 @@
 @inject PlantasService PlantaService
 @inject IJSRuntime Js
 @layout MainLayout
-
+@inject NavigationManager Nav
 <section class="content pt-3">
     <div class="container-fluid">
 
@@ -275,44 +275,54 @@
                  role="dialog"
                  style="display:block;"
                  aria-modal="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header bg-danger">
-                            <h5 class="modal-title">
-                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content confirm-modal">
+
+                        <!-- Cabeçalho -->
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title mb-0">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
                                 Confirmar exclusão
                             </h5>
                             <button type="button"
-                                    class="close"
+                                    class="close text-white"
                                     aria-label="Close"
                                     @onclick="FecharModalExcluir">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
+
+                        <!-- Corpo -->
                         <div class="modal-body">
-                            <p>
+                            <p class="mb-2">
                                 Tem certeza que deseja excluir o usuário
                                 <strong>@UsuarioForm.Login</strong>?
                             </p>
                         </div>
-                        <div class="modal-footer justify-content-between">
+
+                        <!-- Rodapé -->
+                        <div class="modal-footer d-flex justify-content-between">
                             <button type="button"
                                     class="btn btn-outline-secondary btn-sm"
                                     @onclick="FecharModalExcluir">
                                 <i class="fas fa-times mr-1"></i> Não
                             </button>
+
                             <button type="button"
                                     class="btn btn-danger btn-sm"
                                     @onclick="ConfirmarExclusaoAsync">
-                                <i class="fas fa-trash-alt mr-1"></i> Sim, excluir
+                                <i class="fas fa-trash-alt mr-1"></i>
+                                Sim, excluir
                             </button>
                         </div>
+
                     </div>
                 </div>
             </div>
 
             <div class="modal-backdrop fade show"></div>
         }
+
 
     </div>
 </section>
@@ -477,6 +487,11 @@
         var authState = await AuthStateTask;
         var user = authState.User;
 
+        if (user.Identity?.IsAuthenticated != true)
+        {
+            Nav.NavigateTo("/restricted", forceLoad: true);
+        }
+
         if (user.Identity?.IsAuthenticated == true)
         {
             if (int.TryParse(user.FindFirst("Perfil")?.Value, out var perfilInt))
@@ -543,7 +558,7 @@
         {
             dtos = dtos
                 .Where(u =>
-                    u.Perfil == (int)PerfilUsuario.Usuario &&
+                    u.Perfil == (int)PerfilUsuario.Usuario || u.Perfil == (int)PerfilUsuario.Administrador &&
                     (!PlantaIdLogado.HasValue || u.PlantaId == PlantaIdLogado.Value))
                 .ToList();
         }
@@ -588,6 +603,16 @@
     {
         var isEdicao = IsEditMode && UsuarioEmEdicaoId.HasValue;
 
+        // Normaliza login
+        var loginNormalizado = (UsuarioForm.Login ?? string.Empty).Trim();
+
+        // Regra 0: login obrigatório (já tem DataAnnotation, mas garantimos aqui também)
+        if (string.IsNullOrWhiteSpace(loginNormalizado))
+        {
+            await ShowToastErroAsync("O login é obrigatório.");
+            return;
+        }
+
         // Regra 1: só SuperGestor pode criar/editar SuperGestor
         if (PerfilLogado != PerfilUsuario.SuperGestor &&
             UsuarioForm.Perfil == PerfilUsuario.SuperGestor)
@@ -606,6 +631,21 @@
             }
         }
 
+        // ✅ Regra 3: não permitir mesmo login para a mesma planta
+        // se estiver em edição, ignoramos o próprio registo
+        var idAtual = isEdicao ? UsuarioEmEdicaoId!.Value : 0;
+
+        var existeDuplicado = TodosUsuarios.Any(u =>
+            u.Id != idAtual &&
+            string.Equals((u.Login ?? string.Empty).Trim(), loginNormalizado, StringComparison.OrdinalIgnoreCase) &&
+            u.PlantaId == UsuarioForm.PlantaId);
+
+        if (existeDuplicado)
+        {
+            await ShowToastErroAsync("Já existe um usuário com este login para a mesma planta.");
+            return;
+        }
+
         try
         {
             if (isEdicao)
@@ -613,7 +653,7 @@
                 var dto = new UsuariosDto
                 {
                     Id = UsuarioEmEdicaoId.Value,
-                    Login = UsuarioForm.Login,
+                    Login = loginNormalizado,
                     NomeCompleto = UsuarioForm.NomeCompleto,
                     Perfil = (int)UsuarioForm.Perfil,
                     Ativa = UsuarioForm.Ativa,
@@ -629,7 +669,7 @@
             {
                 var dto = new UsuariosDto
                 {
-                    Login = UsuarioForm.Login,
+                    Login = loginNormalizado,
                     NomeCompleto = UsuarioForm.NomeCompleto,
                     Perfil = (int)UsuarioForm.Perfil,
                     Ativa = UsuarioForm.Ativa,

@@ -8,6 +8,7 @@ using CN.Lototo.Infrastructure.Data.UnitOfWork;
 using CN.Lototo.Infrastructure.Storage;
 using CN.Lototo.Web.Services;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -65,6 +66,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IBlobStorageService, AzureBlobStorageService>();
 builder.Services.AddScoped<IEquipamentoExcelParser, EquipmentExcelParser>();
 builder.Services.AddScoped<IImageOcrService, AzureImageOcrService>();
+
+builder.Services.AddScoped<ProtectedSessionStorage>();
 
 // Application
 builder.Services.AddScoped<IEquipamentoAppService, EquipamentoAppService>();

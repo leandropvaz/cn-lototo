@@ -7,6 +7,8 @@
 @inject PlantasService PlantaService
 @inject IJSRuntime Js
 @layout MainLayout
+@inject NavigationManager Nav
+
 
 <section class="content pt-3">
     <div class="container-fluid">
@@ -19,6 +21,7 @@
                         <i class="fas fa-bolt mr-1"></i>
                         Consulta de energias perigosas por equipamento
                     </h4>
+                    @* Se quiser voltar a mostrar planta atual para não-supergestor, podes descomentar
                     <small class="text-muted titulo-planta">
                         Planta atual:
                         @if (!string.IsNullOrEmpty(PlantaDescricao))
@@ -27,9 +30,10 @@
                         }
                         else
                         {
-                            <span class="text-danger">Planta não definida nas claims</span>
+                            <span class="text-danger">Planta não definida</span>
                         }
                     </small>
+                    *@
                 </div>
             </div>
         </div>
@@ -47,6 +51,25 @@
                     </div>
                     <div class="card-body filtros-body">
                         <EditForm OnValidSubmit="BuscarAsync" Model="@this">
+
+                            @* 🔹 LINHA EXTRA PARA SUPER GESTOR: SELEÇÃO DE PLANTA *@
+                            @if (IsSuperGestor)
+                            {
+                                <div class="form-row mb-1">
+                                    <div class="form-group col-12 col-md-4">
+                                        <label class="filtro-label">Planta</label>
+                                        <InputSelect class="form-control form-control-sm filtro-input"
+                                                     @bind-Value="PlantaPesquisaId">
+                                            <option value="">Selecione...</option>
+                                            @foreach (var planta in Plantas)
+                                            {
+                                                <option value="@planta.Id">@planta.Nome (@planta.Codigo)</option>
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                </div>
+                            }
+
                             <div class="form-row">
                                 <div class="form-group col-12 col-md-3">
                                     <label class="filtro-label">Tag do equipamento</label>
@@ -140,7 +163,7 @@
                                 {
                                     @($"{Resultados.Count} equipamento(s) encontrado(s)")
                                 }
-                                else if (!CarregandoEquipamentos && PlantIdAtual > 0)
+                                else if (!CarregandoEquipamentos && PlantaPesquisaId.HasValue && PlantaPesquisaId > 0)
                                 {
                                     @("Nenhum equipamento encontrado para os filtros")
                                 }
@@ -227,7 +250,7 @@
 
         </div>
 
-        @* MODAL IMAGEM SIMPLES *@
+        @* MODAL IMAGEM *@
         @if (MostrarModalImagem)
         {
             <div class="modal fade show"
@@ -235,15 +258,15 @@
                  role="dialog"
                  style="display:block;"
                  aria-modal="true">
-                <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-image" role="document">
                     <div class="modal-content">
-                        <div class="modal-header bg-pw-blue">
-                            <h5 class="modal-title">
+                        <div class="modal-header bg-pw-blue text-white py-2">
+                            <h5 class="modal-title mb-0">
                                 <i class="fas fa-image mr-1"></i>
                                 @ImagemModalTitulo
                             </h5>
                             <button type="button"
-                                    class="close"
+                                    class="close text-white"
                                     aria-label="Close"
                                     @onclick="FecharModalImagem">
                                 <span aria-hidden="true">&times;</span>
@@ -251,25 +274,25 @@
                         </div>
 
                         <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-7 text-center mb-3 mb-md-0">
+                            <div class="d-flex flex-column flex-md-row align-items-start modal-image-content">
+                                <div class="modal-image-wrapper text-center mb-3 mb-md-0 flex-fill">
                                     @if (!string.IsNullOrEmpty(ImagemModalUrl))
                                     {
-                                        <img src="@ImagemModalUrl" class="img-fluid" />
+                                        <img src="@ImagemModalUrl" class="img-fluid rounded shadow-sm" />
                                     }
                                     else
                                     {
                                         <p class="text-muted">Imagem não disponível.</p>
                                     }
                                 </div>
-                                <div class="col-md-5">
-                                    <h6 class="mb-2">
+                                <div class="modal-notes-wrapper ml-md-3">
+                                    <h6 class="mb-2 text-muted">
                                         <i class="fas fa-sticky-note mr-1"></i>
                                         Notas
                                     </h6>
                                     @if (!string.IsNullOrWhiteSpace(ImagemModalNotas))
                                     {
-                                        <div class="border rounded p-4 bg-warning" style="min-height: 80px;">
+                                        <div class="image-notes-bubble">
                                             @ImagemModalNotas
                                         </div>
                                     }
@@ -283,9 +306,9 @@
                             </div>
                         </div>
 
-                        <div class="modal-footer">
+                        <div class="modal-footer py-2">
                             <button type="button"
-                                    class="btn btn-secondary btn-compact"
+                                    class="btn btn-secondary btn-sm"
                                     @onclick="FecharModalImagem">
                                 Fechar
                             </button>
@@ -300,7 +323,27 @@
 </section>
 
 <style>
-    /* Título principal mais compacto */
+    .image-notes-bubble {
+        background-color: #fff3cd;
+        border: 1px solid #f1c453;
+        border-radius: 0.75rem;
+        padding: 0.65rem 0.9rem;
+        font-size: 0.8rem;
+        line-height: 1.3rem;
+        position: relative;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+        .image-notes-bubble::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 18px;
+            border-width: 8px 10px 8px 0;
+            border-style: solid;
+            border-color: transparent #f1c453 transparent transparent;
+        }
+
     .conteudo-titulo {
         font-size: 1.1rem !important;
         font-weight: 600;
@@ -310,7 +353,6 @@
         font-size: 0.78rem !important;
     }
 
-    /* Cabeçalho dos cards menor */
     .card-title-compact {
         font-size: 0.9rem !important;
     }
@@ -323,13 +365,11 @@
         padding: 0.55rem 0.9rem !important;
     }
 
-    /* Labels dos filtros */
     .filtro-label {
         font-size: 0.78rem !important;
         margin-bottom: 0.1rem !important;
     }
 
-    /* Inputs dos filtros */
     .filtro-input,
     .form-control-sm {
         font-size: 0.78rem !important;
@@ -341,7 +381,6 @@
         margin-bottom: 0.35rem !important;
     }
 
-    /* Botões compactos */
     .btn-compact {
         font-size: 0.78rem !important;
         padding: 0.25rem 0.55rem !important;
@@ -351,7 +390,6 @@
         font-size: 0.76rem !important;
     }
 
-    /* Tabela */
     .equip-table th,
     .equip-table td {
         font-size: 0.72rem;
@@ -364,12 +402,18 @@
     }
 </style>
 
+
 @code {
     [CascadingParameter]
     private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
 
+    private bool IsSuperGestor { get; set; }
+
     private int PlantIdAtual { get; set; }
     private string? PlantaDescricao { get; set; }
+
+    // Planta usada para pesquisa (para não-super vem da claim; para SuperGestor vem do combo)
+    private int? PlantaPesquisaId { get; set; }
 
     // Filtros
     private string? FiltroTag { get; set; }
@@ -386,11 +430,19 @@
     private List<EquipamentoDto> Resultados { get; set; } = new();
     private bool CarregandoEquipamentos { get; set; }
 
+    // Plantas (usada para SuperGestor)
+    private List<PlantasDto> Plantas { get; set; } = new();
+
     // Modal imagem
     private bool MostrarModalImagem;
     private string? ImagemModalUrl;
     private string? ImagemModalTitulo;
     private string? ImagemModalNotas;
+
+    // Flags para toasts
+    private bool _mostrarToastNaoAutenticado;
+    private bool _mostrarToastSemPlanta;
+    private bool _mostrarToastErroCarregar;
 
     protected override async Task OnInitializedAsync()
     {
@@ -399,25 +451,40 @@
 
         if (user.Identity?.IsAuthenticated != true)
         {
-            await Js.InvokeVoidAsync("adminlteToasts.show", "error", "Erro", "Utilizador não autenticado.");
+            _mostrarToastNaoAutenticado = true;
             return;
         }
 
-        // Tenta obter o plantId das claims
+        IsSuperGestor = user.IsInRole("SuperGestor");
+
+        if (IsSuperGestor)
+        {
+            // Super Gestor: carrega todas as plantas para o combo, mas não obriga claim de planta
+            Plantas = (await PlantaService.ListarAsync())
+                .OrderBy(p => p.Nome)
+                .ToList();
+
+            PlantaPesquisaId = null; // espera o utilizador escolher
+
+            // Não carrega equipamentos ainda
+            return;
+        }
+
+        // ---- Utilizadores que NÃO são SuperGestor ----
         var plantClaim = user.Claims.FirstOrDefault(c =>
-            c.Type == "plantId" ||
+            c.Type == "plantaId" ||
             c.Type == "PlantaId" ||
             c.Type == "Plant");
 
         if (plantClaim == null || !int.TryParse(plantClaim.Value, out var plantId) || plantId <= 0)
         {
-            await Js.InvokeVoidAsync("adminlteToasts.show", "error", "Erro", "Planta não encontrada nas claims do utilizador.");
+            _mostrarToastSemPlanta = true;
             return;
         }
 
         PlantIdAtual = plantId;
+        PlantaPesquisaId = plantId;
 
-        // Carrega nome/código da planta (opcional, só pra exibir bonito)
         try
         {
             var plantas = (await PlantaService.ListarAsync()).ToList();
@@ -429,29 +496,52 @@
         }
         catch
         {
-            // Se der erro aqui, não bloqueia a página, só não mostra nome
+            // erro a carregar planta não bloqueia a página
         }
 
         await CarregarEquipamentosAsync();
         AplicarFiltros();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        if (_mostrarToastNaoAutenticado)
+        {
+            Nav.NavigateTo("/restricted", forceLoad: true);
+        }
+        else if (_mostrarToastSemPlanta && !IsSuperGestor)
+        {
+            await Js.InvokeVoidAsync("adminlteToasts.show", "error", "Erro", "Planta não encontrada nas claims do utilizador.");
+        }
+        else if (_mostrarToastErroCarregar)
+        {
+            await Js.InvokeVoidAsync("adminlteToasts.show", "error", "Erro", "Erro ao carregar equipamentos da planta.");
+        }
+    }
+
     private async Task CarregarEquipamentosAsync()
     {
-        if (PlantIdAtual <= 0)
+        if (!PlantaPesquisaId.HasValue || PlantaPesquisaId <= 0)
+        {
+            TodosEquipamentos = new();
+            Resultados = new();
             return;
+        }
 
         CarregandoEquipamentos = true;
         try
         {
-            TodosEquipamentos = (await EquipamentoAppService.GetByPlantAsync(PlantIdAtual))
+            TodosEquipamentos = (await EquipamentoAppService.GetByPlantAsync(PlantaPesquisaId.Value))
                 .Where(e => !e.IsDeleted)
                 .ToList();
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            await Js.InvokeVoidAsync("adminlteToasts.show", "error", "Erro", "Erro ao carregar equipamentos da planta.");
+            _mostrarToastErroCarregar = true;
         }
         finally
         {
@@ -459,10 +549,24 @@
         }
     }
 
-    private Task BuscarAsync()
+    private async Task BuscarAsync()
     {
+        // Se for SuperGestor, obriga escolher a planta antes de pesquisar
+        if (IsSuperGestor)
+        {
+            if (!PlantaPesquisaId.HasValue || PlantaPesquisaId <= 0)
+            {
+                await Js.InvokeVoidAsync("adminlteToasts.show",
+                    "warning",
+                    "Atenção",
+                    "Selecione a planta para pesquisar os equipamentos.");
+                return;
+            }
+
+            await CarregarEquipamentosAsync();
+        }
+
         AplicarFiltros();
-        return Task.CompletedTask;
     }
 
     private void AplicarFiltros()
