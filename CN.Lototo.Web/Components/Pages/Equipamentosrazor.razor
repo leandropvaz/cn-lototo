@@ -1,5 +1,8 @@
 ﻿@page "/equipamentos"
 @using System.ComponentModel.DataAnnotations
+@using System.Drawing
+@using System.Drawing.Imaging
+@using System.Linq
 @using CN.Lototo.Application.Dto
 @using CN.Lototo.Application.Interfaces
 @using Microsoft.AspNetCore.Components.Authorization
@@ -150,6 +153,18 @@
                                                 <InputTextArea class="form-control" rows="4" @bind-Value="Manual.HazardDescription" />
                                                 <ValidationMessage For="@(() => Manual.HazardDescription)" class="text-danger small" />
                                             </div>
+
+                                            <div class="form-group">
+                                                <label>Verificação de energia zero</label>
+                                                <InputTextArea class="form-control" rows="2"
+                                                               @bind-Value="Manual.ZeroEnergyVerification" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Teste</label>
+                                                <InputTextArea class="form-control" rows="2"
+                                                               @bind-Value="Manual.Test" />
+                                            </div>
                                         </div>
                                     </div>
 
@@ -184,20 +199,22 @@
                                         </div>
                                     </div>
 
-                                    @* IMAGEM *@
+                                    @* IMAGENS *@
                                     <div class="form-group">
-                                        <label>Imagem do equipamento</label>
-                                        <InputFile OnChange="ImagemManualSelecionada" accept="image/*" />
+                                        <label>Imagens do equipamento</label>
+                                        <InputFile OnChange="ImagensManuaisSelecionadas"
+                                                   accept="image/*"
+                                                   multiple />
                                         @if (!string.IsNullOrEmpty(Manual.ImageFileName))
                                         {
                                             <small class="form-text text-muted">
-                                                Arquivo: @Manual.ImageFileName
+                                                Arquivos selecionados: @Manual.ImageFileName
                                             </small>
                                         }
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Notas da imagem </label>
+                                    <label>Notas das imagens</label>
                                     <InputTextArea class="form-control" rows="4" @bind-Value="Manual.ImageNotes" />
                                 </div>
 
@@ -207,7 +224,7 @@
                                     <i class="fas fa-save mr-1"></i>
                                     @(SalvandoManual
                                                                     ? "Salvando..."
-                                                                    : (IsEditMode ? "Guardar alterações" : "Salvar equipamento"))
+                                                                    : (IsEditMode ? "Salvar alterações" : "Salvar equipamento"))
                                     </button>
                                 </EditForm>
                             }
@@ -297,7 +314,7 @@
                                 A lista de equipamentos foi atualizada na linha abaixo.
                             </p>
                             <p class="text-muted mb-0">
-                                Pode continuar a cadastrar manualmente ou importar novos arquivos.
+                                Você pode continuar cadastrando manualmente ou importar novos arquivos.
                             </p>
                         }
 
@@ -396,7 +413,7 @@
                                 <thead>
                                     <tr class="thead-light">
                                         <th colspan="5" class="text-center">I. Identificação</th>
-                                        <th colspan="4" class="text-center">II. Controlo energias</th>
+                                        <th colspan="6" class="text-center">II. Controle energias</th>
                                         <th rowspan="2" style="width: 5%;" class="text-center align-middle">Img</th>
                                         <th rowspan="2" style="width: 5%;" class="text-center align-middle">Ativo</th>
                                         <th rowspan="2" style="width: 15%;" class="text-right align-middle">Ações</th>
@@ -412,6 +429,8 @@
                                         <th style="width: 14%;">Loc. disp.</th>
                                         <th style="width: 10%;">Disp.</th>
                                         <th style="width: 8%;">Bloq.</th>
+                                        <th style="width: 14%;">Verif. energ. zero</th>
+                                        <th style="width: 14%;">Teste</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -430,6 +449,9 @@
                                                 <td>@e.IsolationDeviceLocation</td>
                                                 <td>@e.IsolationDeviceDescription</td>
                                                 <td>@e.LockoutType</td>
+
+                                                <td>@e.ZeroEnergyVerification</td>
+                                                <td>@e.Test</td>
 
                                                 <td class="text-center">
                                                     @if (!string.IsNullOrEmpty(e.ImageBlobUrl))
@@ -471,7 +493,7 @@
                                     else
                                     {
                                         <tr>
-                                            <td colspan="12" class="text-center text-muted py-3">
+                                            <td colspan="14" class="text-center text-muted py-3">
                                                 Nenhum equipamento encontrado para a planta selecionada.
                                             </td>
                                         </tr>
@@ -681,6 +703,7 @@
     .equip-table td {
         font-size: 0.78rem;
         padding: 0.25rem 0.45rem;
+        vertical-align: top;
     }
 
     .equip-table thead th {
@@ -695,16 +718,28 @@
 
     .modal-image .modal-content {
         border-radius: 0.75rem;
+        overflow-x: hidden;
+    }
+
+    .modal-image .modal-dialog {
+        max-width: 900px;
+        width: 100%;
+        margin: 1.75rem auto;
     }
 
     .modal-image-content {
         gap: 1.5rem;
+        width: 100%;
     }
 
-    .modal-image-wrapper img {
-        max-height: 420px;
-        object-fit: contain;
+    .modal-image-wrapper {
+        max-width: 100%;
     }
+
+        .modal-image-wrapper img {
+            max-height: 420px;
+            object-fit: contain;
+        }
 
     .modal-notes-wrapper {
         max-width: 320px;
@@ -720,6 +755,8 @@
         line-height: 1.3rem;
         position: relative;
         box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 
         .image-notes-bubble::before {
@@ -750,6 +787,26 @@
         .confirm-modal .modal-footer {
             border-top: none;
         }
+
+    /* Ajustes responsivos para evitar overflow horizontal do modal em telas menores */
+    @@media (max-width: 768px) {
+        .modal-image .modal-dialog {
+            max-width: 95%;
+            margin: 1rem auto;
+        }
+
+        .modal-image-content {
+            flex-direction: column !important;
+            gap: 1rem;
+        }
+
+        .modal-notes-wrapper {
+            max-width: 100%;
+            width: 100%;
+            margin-left: 0 !important;
+            margin-top: 0.75rem;
+        }
+    }
 </style>
 
 @code {
@@ -797,6 +854,10 @@
         [Required(ErrorMessage = "Descrição da energia perigosa é obrigatória.")]
         public string HazardDescription { get; set; } = string.Empty;
 
+        // Novos campos
+        public string? ZeroEnergyVerification { get; set; }
+        public string? Test { get; set; }
+
         public string? IsolationDeviceTag { get; set; }
         public string? IsolationDeviceLocation { get; set; }
         public string? IsolationDeviceDescription { get; set; }
@@ -822,7 +883,9 @@
     private ModoCadastro ModoSelecionado = ModoCadastro.ImportacaoExcel;
 
     private ManualModel Manual = new();
-    private IBrowserFile? ImagemManualFile;
+
+    // Agora suportando múltiplas imagens no cadastro manual
+    private List<IBrowserFile> ImagensManuais { get; set; } = new();
 
     private bool IsEditMode;
     private Guid? EquipamentoEmEdicaoId;
@@ -858,7 +921,9 @@
                     (e.EnergyType ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
                     (e.HazardDescription ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
                     (e.IsolationDeviceTag ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
-                    (e.IsolationDeviceLocation ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase))
+                    (e.IsolationDeviceLocation ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
+                    (e.ZeroEnergyVerification ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase) ||
+                    (e.Test ?? "").Contains(TermoPesquisa, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
     private IEnumerable<EquipamentoDto> EquipamentosPaginados =>
@@ -952,7 +1017,8 @@
         IsEditMode = false;
         EquipamentoEmEdicaoId = null;
         Manual = new ManualModel();
-        ImagemManualFile = null;
+        ImagensManuais.Clear();
+        Manual.ImageFileName = null;
         ArquivosImportacao.Clear();
         MensagemImportacao = null;
         Importando = false;
@@ -994,10 +1060,70 @@
         }
     }
 
-    private void ImagemManualSelecionada(InputFileChangeEventArgs e)
+    // Múltiplas imagens no cadastro manual
+    private void ImagensManuaisSelecionadas(InputFileChangeEventArgs e)
     {
-        ImagemManualFile = e.File;
-        Manual.ImageFileName = ImagemManualFile?.Name;
+        ImagensManuais.Clear();
+
+        foreach (var file in e.GetMultipleFiles(20))
+        {
+            ImagensManuais.Add(file);
+        }
+
+        Manual.ImageFileName = ImagensManuais.Any()
+            ? string.Join(", ", ImagensManuais.Select(f => f.Name))
+            : null;
+    }
+
+    private async Task<Stream?> CriarImagemMescladaAsync()
+    {
+        if (!ImagensManuais.Any())
+            return null;
+
+        var imagens = new List<Image>();
+
+        try
+        {
+            foreach (var file in ImagensManuais)
+            {
+                await using var browserStream = file.OpenReadStream(long.MaxValue);
+                using var ms = new MemoryStream();
+                await browserStream.CopyToAsync(ms);
+                ms.Position = 0;
+
+                imagens.Add(Image.FromStream(ms));
+            }
+
+            var largura = imagens.Max(i => i.Width);
+            var alturaTotal = imagens.Sum(i => i.Height);
+
+            var bitmapFinal = new Bitmap(largura, alturaTotal);
+
+            using (var g = Graphics.FromImage(bitmapFinal))
+            {
+                g.Clear(Color.White);
+
+                var offsetY = 0;
+                foreach (var img in imagens)
+                {
+                    g.DrawImage(img, new Rectangle(0, offsetY, img.Width, img.Height));
+                    offsetY += img.Height;
+                }
+            }
+
+            var output = new MemoryStream();
+            bitmapFinal.Save(output, ImageFormat.Png);
+            output.Position = 0;
+
+            return output;
+        }
+        finally
+        {
+            foreach (var img in imagens)
+            {
+                img.Dispose();
+            }
+        }
     }
 
     private async Task SalvarManual()
@@ -1020,6 +1146,10 @@
                 ? Manual.RevisionDate.Value.ToString("dd/MM/yyyy")
                 : null;
 
+            // Gera a imagem mesclada (se houver imagens)
+            var imagemMesclada = await CriarImagemMescladaAsync();
+            var hasImagem = imagemMesclada != null;
+
             if (IsEditMode && EquipamentoEmEdicaoId.HasValue)
             {
                 var updateDto = new EquipamentoUpdateDto
@@ -1033,6 +1163,8 @@
                     LineNumber = Manual.LineNumber,
                     EnergyType = Manual.EnergyType,
                     HazardDescription = Manual.HazardDescription,
+                    ZeroEnergyVerification = Manual.ZeroEnergyVerification,
+                    Test = Manual.Test,
                     IsolationDeviceTag = Manual.IsolationDeviceTag,
                     IsolationDeviceLocation = Manual.IsolationDeviceLocation,
                     IsolationDeviceDescription = Manual.IsolationDeviceDescription,
@@ -1042,18 +1174,13 @@
 
                 await EquipamentoAppService.UpdateAsync(updateDto);
 
-                if (ImagemManualFile != null)
+                if (hasImagem)
                 {
-                    await using var browserStream = ImagemManualFile.OpenReadStream(long.MaxValue);
-                    using var ms = new MemoryStream();
-                    await browserStream.CopyToAsync(ms);
-                    ms.Position = 0;
-
                     await EquipamentoAppService.UpdateImageAsync(
                         EquipamentoEmEdicaoId.Value,
-                        ms,
-                        ImagemManualFile.Name,
-                        ImagemManualFile.ContentType);
+                        imagemMesclada!,
+                        "equipamento.png",
+                        "image/png");
                 }
             }
             else
@@ -1068,6 +1195,8 @@
                     LineNumber = Manual.LineNumber,
                     EnergyType = Manual.EnergyType,
                     HazardDescription = Manual.HazardDescription,
+                    ZeroEnergyVerification = Manual.ZeroEnergyVerification,
+                    Test = Manual.Test,
                     IsolationDeviceTag = Manual.IsolationDeviceTag,
                     IsolationDeviceLocation = Manual.IsolationDeviceLocation,
                     IsolationDeviceDescription = Manual.IsolationDeviceDescription,
@@ -1075,42 +1204,27 @@
                     ImageNotes = Manual.ImageNotes
                 };
 
-                if (ImagemManualFile != null)
-                {
-                    await using var browserStream = ImagemManualFile.OpenReadStream(long.MaxValue);
-                    using var ms = new MemoryStream();
-                    await browserStream.CopyToAsync(ms);
-                    ms.Position = 0;
-
-                    await EquipamentoAppService.CreateManualAsync(
-                        createDto,
-                        ms,
-                        ImagemManualFile.Name,
-                        ImagemManualFile.ContentType);
-                }
-                else
-                {
-                    await EquipamentoAppService.CreateManualAsync(
-                        createDto,
-                        null,
-                        null,
-                        null);
-                }
+                await EquipamentoAppService.CreateManualAsync(
+                    createDto,
+                    imagemMesclada,
+                    hasImagem ? "equipamento.png" : null,
+                    hasImagem ? "image/png" : null);
             }
 
             Manual = new ManualModel();
-            ImagemManualFile = null;
+            ImagensManuais.Clear();
+            Manual.ImageFileName = null;
             IsEditMode = false;
             EquipamentoEmEdicaoId = null;
 
             await CarregarEquipamentosAsync();
-            await ShowToastSucessoAsync("Equipamento guardado com sucesso.");
+            await ShowToastSucessoAsync("Equipamento salvo com sucesso.");
             passoAtual = 3;
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            await ShowToastErroAsync("Ocorreu um erro ao guardar o equipamento.");
+            await ShowToastErroAsync("Ocorreu um erro ao salvar o equipamento.");
         }
         finally
         {
@@ -1141,6 +1255,8 @@
             LineNumber = dto.LineNumber,
             EnergyType = dto.EnergyType,
             HazardDescription = dto.HazardDescription,
+            ZeroEnergyVerification = dto.ZeroEnergyVerification,
+            Test = dto.Test,
             IsolationDeviceTag = dto.IsolationDeviceTag,
             IsolationDeviceLocation = dto.IsolationDeviceLocation,
             IsolationDeviceDescription = dto.IsolationDeviceDescription,
@@ -1150,7 +1266,7 @@
 
         Manual.RevisionDate = ParseNullableDate(dto.RevisionInfo);
 
-        ImagemManualFile = null;
+        ImagensManuais.Clear();
         Manual.ImageFileName = null;
     }
 

@@ -130,6 +130,23 @@
                                 </div>
                             </div>
 
+                            @* NOVA LINHA – filtros dos novos campos *@
+                            <div class="form-row">
+                                <div class="form-group col-12 col-md-6">
+                                    <label class="filtro-label">Verificação de energia zero</label>
+                                    <InputText class="form-control form-control-sm filtro-input"
+                                               @bind-Value="FiltroVerificacaoEnergiaZero"
+                                               placeholder="Parte do texto da verificação..." />
+                                </div>
+
+                                <div class="form-group col-12 col-md-6">
+                                    <label class="filtro-label">Teste</label>
+                                    <InputText class="form-control form-control-sm filtro-input"
+                                               @bind-Value="FiltroTeste"
+                                               placeholder="Parte do texto do teste..." />
+                                </div>
+                            </div>
+
                             <div class="d-flex justify-content-end mt-1">
                                 <button type="button"
                                         class="btn btn-default btn-sm btn-compact mr-2"
@@ -177,7 +194,7 @@
                                 <thead>
                                     <tr class="thead-light">
                                         <th colspan="5" class="text-center">I. Identificação</th>
-                                        <th colspan="4" class="text-center">II. Controlo energias</th>
+                                        <th colspan="6" class="text-center">II. Controlo energias</th>
                                         <th rowspan="2" style="width: 5%;" class="text-center align-middle">Img</th>
                                     </tr>
                                     <tr class="thead-light">
@@ -191,13 +208,15 @@
                                         <th style="width: 14%;">Loc. disp.</th>
                                         <th style="width: 10%;">Disp.</th>
                                         <th style="width: 8%;">Bloq.</th>
+                                        <th style="width: 14%;">Verif. energ. zero</th>
+                                        <th style="width: 14%;">Teste</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @if (CarregandoEquipamentos)
                                     {
                                         <tr>
-                                            <td colspan="10" class="text-center text-muted py-3">
+                                            <td colspan="12" class="text-center text-muted py-3">
                                                 <i class="fas fa-sync-alt fa-spin mr-2"></i>
                                                 A carregar equipamentos da planta...
                                             </td>
@@ -219,6 +238,9 @@
                                                 <td>@e.IsolationDeviceDescription</td>
                                                 <td>@e.LockoutType</td>
 
+                                                <td>@e.ZeroEnergyVerification</td>
+                                                <td>@e.Test</td>
+
                                                 <td class="text-center">
                                                     @if (!string.IsNullOrEmpty(e.ImageBlobUrl))
                                                     {
@@ -235,7 +257,7 @@
                                     else
                                     {
                                         <tr>
-                                            <td colspan="10" class="text-center text-muted py-3">
+                                            <td colspan="12" class="text-center text-muted py-3">
                                                 Nenhum registo para os filtros informados.
                                             </td>
                                         </tr>
@@ -332,6 +354,8 @@
         line-height: 1.3rem;
         position: relative;
         box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 
         .image-notes-bubble::before {
@@ -400,6 +424,58 @@
         font-size: 0.7rem;
         white-space: nowrap;
     }
+
+    /* ------ AJUSTES DO MODAL PARA NÃO ESTOURAR NA HORIZONTAL ------ */
+
+    .modal-image .modal-content {
+        border-radius: 0.75rem;
+        overflow-x: hidden;
+    }
+
+    .modal-image .modal-dialog {
+        max-width: 900px;
+        width: 100%;
+        margin: 1.75rem auto;
+    }
+
+    .modal-image-content {
+        gap: 1.5rem;
+        width: 100%;
+    }
+
+    .modal-image-wrapper {
+        max-width: 100%;
+    }
+
+        .modal-image-wrapper img {
+            max-height: 420px;
+            object-fit: contain;
+        }
+
+    .modal-notes-wrapper {
+        max-width: 320px;
+        width: 100%;
+    }
+
+    /* Responsivo: empilhar imagem e notas em telas pequenas */
+    @@media (max-width: 768px) {
+        .modal-image .modal-dialog {
+            max-width: 95%;
+            margin: 1rem auto;
+        }
+
+        .modal-image-content {
+            flex-direction: column !important;
+            gap: 1rem;
+        }
+
+        .modal-notes-wrapper {
+            max-width: 100%;
+            width: 100%;
+            margin-left: 0 !important;
+            margin-top: 0.75rem;
+        }
+    }
 </style>
 
 
@@ -424,6 +500,8 @@
     private string? FiltroLocalizacaoDispositivo { get; set; }
     private string? FiltroDispositivoIsolamento { get; set; }
     private string? FiltroBloqueio { get; set; }
+    private string? FiltroVerificacaoEnergiaZero { get; set; }
+    private string? FiltroTeste { get; set; }
 
     // Dados
     private List<EquipamentoDto> TodosEquipamentos { get; set; } = new();
@@ -621,6 +699,18 @@
                 (e.LockoutType ?? "").Contains(FiltroBloqueio, StringComparison.OrdinalIgnoreCase));
         }
 
+        if (!string.IsNullOrWhiteSpace(FiltroVerificacaoEnergiaZero))
+        {
+            query = query.Where(e =>
+                (e.ZeroEnergyVerification ?? "").Contains(FiltroVerificacaoEnergiaZero, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(FiltroTeste))
+        {
+            query = query.Where(e =>
+                (e.Test ?? "").Contains(FiltroTeste, StringComparison.OrdinalIgnoreCase));
+        }
+
         Resultados = query.ToList();
     }
 
@@ -634,6 +724,8 @@
         FiltroLocalizacaoDispositivo = null;
         FiltroDispositivoIsolamento = null;
         FiltroBloqueio = null;
+        FiltroVerificacaoEnergiaZero = null;
+        FiltroTeste = null;
 
         AplicarFiltros();
     }

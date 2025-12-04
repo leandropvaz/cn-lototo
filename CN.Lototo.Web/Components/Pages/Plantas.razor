@@ -98,7 +98,7 @@
 
                             <div class="d-flex justify-content-between">
                                 <button type="submit" class="btn btn-primary">
-                                    @(IsEditMode ? "Guardar alterações" : "Cadastrar")
+                                    @(IsEditMode ? "Salvar alterações" : "Cadastrar")
                                 </button>
 
                                 @if (IsEditMode)
@@ -539,7 +539,7 @@
         }
         catch (Exception ex)
         {
-            await ShowToastErroAsync("Ocorreu um erro ao guardar a planta.");
+            await ShowToastErroAsync("Ocorreu um erro ao salvar a planta.");
             Console.WriteLine(ex);
         }
     }

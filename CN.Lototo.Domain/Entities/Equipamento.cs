@@ -26,6 +26,9 @@ namespace CN.Lototo.Domain.Entities
         public string? IsolationDeviceDescription { get; set; }   // Dispositivo de isolamento
         public string? LockoutType { get; set; }                  // Bloqueio (ex.: "Sim, ICV")
 
+        public string ZeroEnergyVerification { get; set; } = string.Empty;
+        public string Test { get; set; } = string.Empty;
+
         // EXCEL / IMAGEM
         public string? SourceExcelBlobUrl { get; set; }           // URL do Excel original
         public string? ImageBlobUrl { get; set; }                 // URL da imagem

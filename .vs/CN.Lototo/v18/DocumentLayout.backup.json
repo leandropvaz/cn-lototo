@@ -3,24 +3,56 @@
   "WorkspaceRootPath": "C:\\Leandro\\repo\\cn-lototo\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.web\\components\\pages\\usuarios.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|solutionrelative:cn.lototo.web\\components\\pages\\usuarios.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.web\\components\\pages\\equipamentosrazor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|solutionrelative:cn.lototo.web\\components\\pages\\equipamentosrazor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.web\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|solutionrelative:cn.lototo.web\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A8DB466A-8175-3A51-70FF-287226078EC7}|CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.infrastructure\\data\\repositories\\usuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A8DB466A-8175-3A51-70FF-287226078EC7}|CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj|solutionrelative:cn.lototo.infrastructure\\data\\repositories\\usuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.web\\components\\pages\\equipamentosrazorbkp.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|solutionrelative:cn.lototo.web\\components\\pages\\equipamentosrazorbkp.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{548B8191-F6E4-A344-2712-D475812F8677}|CN.Lototo.Application\\CN.Lototo.Application.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.application\\services\\equipamentoappservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{548B8191-F6E4-A344-2712-D475812F8677}|CN.Lototo.Application\\CN.Lototo.Application.csproj|solutionrelative:cn.lototo.application\\services\\equipamentoappservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{548B8191-F6E4-A344-2712-D475812F8677}|CN.Lototo.Application\\CN.Lototo.Application.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.application\\dto\\equipamentocreatemanualrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{548B8191-F6E4-A344-2712-D475812F8677}|CN.Lototo.Application\\CN.Lototo.Application.csproj|solutionrelative:cn.lototo.application\\dto\\equipamentocreatemanualrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{548B8191-F6E4-A344-2712-D475812F8677}|CN.Lototo.Application\\CN.Lototo.Application.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.application\\dto\\equipamentoupdatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{548B8191-F6E4-A344-2712-D475812F8677}|CN.Lototo.Application\\CN.Lototo.Application.csproj|solutionrelative:cn.lototo.application\\dto\\equipamentoupdatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{548B8191-F6E4-A344-2712-D475812F8677}|CN.Lototo.Application\\CN.Lototo.Application.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.application\\dto\\equipamentodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{548B8191-F6E4-A344-2712-D475812F8677}|CN.Lototo.Application\\CN.Lototo.Application.csproj|solutionrelative:cn.lototo.application\\dto\\equipamentodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A8DB466A-8175-3A51-70FF-287226078EC7}|CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.infrastructure\\storage\\equipmentexcelparser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A8DB466A-8175-3A51-70FF-287226078EC7}|CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj|solutionrelative:cn.lototo.infrastructure\\storage\\equipmentexcelparser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.web\\components\\pages\\usuarios.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|solutionrelative:cn.lototo.web\\components\\pages\\usuarios.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.web\\wwwroot\\css\\custom.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|solutionrelative:cn.lototo.web\\wwwroot\\css\\custom.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A8DB466A-8175-3A51-70FF-287226078EC7}|CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.infrastructure\\cn.lototo.infrastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{A8DB466A-8175-3A51-70FF-287226078EC7}|CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj|solutionrelative:cn.lototo.infrastructure\\cn.lototo.infrastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.web\\cn.lototo.web.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|solutionrelative:cn.lototo.web\\cn.lototo.web.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.web\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|solutionrelative:cn.lototo.web\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.web\\components\\pages\\login.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|solutionrelative:cn.lototo.web\\components\\pages\\login.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{335BD564-1911-411A-88D5-0CABF60D87D3}|CN.Lototo.Web\\CN.Lototo.Web.csproj|c:\\leandro\\repo\\cn-lototo\\cn.lototo.web\\dto\\loginresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -34,7 +66,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 35,
+          "SelectedChildIndex": 33,
           "Children": [
             {
               "$type": "Bookmark",
@@ -162,20 +194,163 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "EquipamentoCreateManualRequestDto.cs",
+              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Application\\Dto\\EquipamentoCreateManualRequestDto.cs",
+              "RelativeDocumentMoniker": "CN.Lototo.Application\\Dto\\EquipamentoCreateManualRequestDto.cs",
+              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Application\\Dto\\EquipamentoCreateManualRequestDto.cs",
+              "RelativeToolTip": "CN.Lototo.Application\\Dto\\EquipamentoCreateManualRequestDto.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAQwBYAAAA4AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-04T21:05:02.947Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "EquipamentoDto.cs",
+              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Application\\Dto\\EquipamentoDto.cs",
+              "RelativeDocumentMoniker": "CN.Lototo.Application\\Dto\\EquipamentoDto.cs",
+              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Application\\Dto\\EquipamentoDto.cs",
+              "RelativeToolTip": "CN.Lototo.Application\\Dto\\EquipamentoDto.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAA6wBgAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-04T21:03:13.048Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Equipamentosrazor.razor",
+              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Components\\Pages\\Equipamentosrazor.razor",
+              "RelativeDocumentMoniker": "CN.Lototo.Web\\Components\\Pages\\Equipamentosrazor.razor",
+              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Components\\Pages\\Equipamentosrazor.razor*",
+              "RelativeToolTip": "CN.Lototo.Web\\Components\\Pages\\Equipamentosrazor.razor*",
+              "ViewState": "AgIAAAcDAAAAAAAAAIAwwBcDAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-04T20:52:37.982Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "EquipamentoAppService.cs",
+              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Application\\Services\\EquipamentoAppService.cs",
+              "RelativeDocumentMoniker": "CN.Lototo.Application\\Services\\EquipamentoAppService.cs",
+              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Application\\Services\\EquipamentoAppService.cs",
+              "RelativeToolTip": "CN.Lototo.Application\\Services\\EquipamentoAppService.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAA1wB8AAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-04T21:10:58.396Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 1,
               "Title": "Home.razor",
               "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Components\\Pages\\Home.razor",
               "RelativeDocumentMoniker": "CN.Lototo.Web\\Components\\Pages\\Home.razor",
               "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Components\\Pages\\Home.razor",
               "RelativeToolTip": "CN.Lototo.Web\\Components\\Pages\\Home.razor",
-              "ViewState": "AgIAAPEBAAAAAAAAAAAwwJACAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAJgCAAAAAAAAAAAwwLYCAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-11-29T22:15:45.358Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
+              "Title": "EquipamentosrazorBKP.razor",
+              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Components\\Pages\\EquipamentosrazorBKP.razor",
+              "RelativeDocumentMoniker": "CN.Lototo.Web\\Components\\Pages\\EquipamentosrazorBKP.razor",
+              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Components\\Pages\\EquipamentosrazorBKP.razor",
+              "RelativeToolTip": "CN.Lototo.Web\\Components\\Pages\\EquipamentosrazorBKP.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEoFAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-04T21:39:44.832Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "EquipamentoUpdateDto.cs",
+              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Application\\Dto\\EquipamentoUpdateDto.cs",
+              "RelativeDocumentMoniker": "CN.Lototo.Application\\Dto\\EquipamentoUpdateDto.cs",
+              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Application\\Dto\\EquipamentoUpdateDto.cs",
+              "RelativeToolTip": "CN.Lototo.Application\\Dto\\EquipamentoUpdateDto.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAA1wBEAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-04T21:05:27.805Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "EquipmentExcelParser.cs",
+              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Infrastructure\\Storage\\EquipmentExcelParser.cs",
+              "RelativeDocumentMoniker": "CN.Lototo.Infrastructure\\Storage\\EquipmentExcelParser.cs",
+              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Infrastructure\\Storage\\EquipmentExcelParser.cs",
+              "RelativeToolTip": "CN.Lototo.Infrastructure\\Storage\\EquipmentExcelParser.cs",
+              "ViewState": "AgIAALoAAAAAAAAAAAAgwL0AAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-04T20:12:19.121Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Usuarios.razor",
+              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Components\\Pages\\Usuarios.razor",
+              "RelativeDocumentMoniker": "CN.Lototo.Web\\Components\\Pages\\Usuarios.razor",
+              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Components\\Pages\\Usuarios.razor",
+              "RelativeToolTip": "CN.Lototo.Web\\Components\\Pages\\Usuarios.razor",
+              "ViewState": "AgIAAPECAAAAAAAAAAAgwAADAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-29T21:47:23.109Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "CN.Lototo.Infrastructure",
+              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj",
+              "RelativeDocumentMoniker": "CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj",
+              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj",
+              "RelativeToolTip": "CN.Lototo.Infrastructure\\CN.Lototo.Infrastructure.csproj",
+              "ViewState": "AgIAACUAAAAAAAAAAAAuwDkAAABHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-12-04T20:18:14.729Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "CN.Lototo.Web",
+              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\CN.Lototo.Web.csproj",
+              "RelativeDocumentMoniker": "CN.Lototo.Web\\CN.Lototo.Web.csproj",
+              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\CN.Lototo.Web.csproj",
+              "RelativeToolTip": "CN.Lototo.Web\\CN.Lototo.Web.csproj",
+              "ViewState": "AgIAADMAAAAAAAAAAAAAADoAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-12-04T20:08:00.619Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "custom.css",
+              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\wwwroot\\css\\custom.css",
+              "RelativeDocumentMoniker": "CN.Lototo.Web\\wwwroot\\css\\custom.css",
+              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\wwwroot\\css\\custom.css",
+              "RelativeToolTip": "CN.Lototo.Web\\wwwroot\\css\\custom.css",
+              "ViewState": "AgIAAOcAAAAAAAAAAAAAAPUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-12-04T20:35:38.756Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
               "Title": "AuthService.cs",
               "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Services\\AuthService.cs",
               "RelativeDocumentMoniker": "CN.Lototo.Web\\Services\\AuthService.cs",
@@ -183,12 +358,11 @@
               "RelativeToolTip": "CN.Lototo.Web\\Services\\AuthService.cs",
               "ViewState": "AgIAABMAAAAAAAAAAAAYwCMAAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-29T22:05:07.628Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-29T22:05:07.628Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 13,
               "Title": "LoginResult.cs",
               "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Dto\\LoginResult.cs",
               "RelativeDocumentMoniker": "CN.Lototo.Web\\Dto\\LoginResult.cs",
@@ -196,47 +370,7 @@
               "RelativeToolTip": "CN.Lototo.Web\\Dto\\LoginResult.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-29T22:04:20.822Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Login.razor",
-              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Components\\Pages\\Login.razor",
-              "RelativeDocumentMoniker": "CN.Lototo.Web\\Components\\Pages\\Login.razor",
-              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Components\\Pages\\Login.razor",
-              "RelativeToolTip": "CN.Lototo.Web\\Components\\Pages\\Login.razor",
-              "ViewState": "AgIAAI8AAAAAAAAAAAAwwKIAAAA0AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-29T21:52:41.21Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Usuarios.razor",
-              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Components\\Pages\\Usuarios.razor",
-              "RelativeDocumentMoniker": "CN.Lototo.Web\\Components\\Pages\\Usuarios.razor",
-              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Web\\Components\\Pages\\Usuarios.razor",
-              "RelativeToolTip": "CN.Lototo.Web\\Components\\Pages\\Usuarios.razor",
-              "ViewState": "AgIAABgCAAAAAAAAAAAwwDACAAA9AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-29T21:47:23.109Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "UsuarioRepository.cs",
-              "DocumentMoniker": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Infrastructure\\Data\\Repositories\\UsuarioRepository.cs",
-              "RelativeDocumentMoniker": "CN.Lototo.Infrastructure\\Data\\Repositories\\UsuarioRepository.cs",
-              "ToolTip": "C:\\Leandro\\repo\\cn-lototo\\CN.Lototo.Infrastructure\\Data\\Repositories\\UsuarioRepository.cs",
-              "RelativeToolTip": "CN.Lototo.Infrastructure\\Data\\Repositories\\UsuarioRepository.cs",
-              "ViewState": "AgIAAAcAAAAAAAAAAAAhwBIAAAA6AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-29T21:45:04.932Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-29T22:04:20.822Z"
             }
           ]
         }

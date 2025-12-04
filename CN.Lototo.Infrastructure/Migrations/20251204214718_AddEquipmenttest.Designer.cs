@@ -4,6 +4,7 @@ using CN.Lototo.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CN.Lototo.Infrastructure.Migrations
 {
     [DbContext(typeof(LototoContext))]
-    partial class LototoContextModelSnapshot : ModelSnapshot
+    [Migration("20251204214718_AddEquipmenttest")]
+    partial class AddEquipmenttest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

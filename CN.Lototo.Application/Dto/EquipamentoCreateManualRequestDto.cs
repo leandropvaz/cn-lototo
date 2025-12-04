@@ -19,6 +19,9 @@ namespace CN.Lototo.Application.Dto
         public string EnergyType { get; set; } = string.Empty;
         public string HazardDescription { get; set; } = string.Empty;
 
+        public string ZeroEnergyVerification { get; set; } = string.Empty;
+        public string Test { get; set; } = string.Empty;
+
         // II. Controle
         public string? IsolationDeviceTag { get; set; }
         public string? IsolationDeviceLocation { get; set; }

@@ -17,6 +17,9 @@ namespace CN.Lototo.Application.Dto
         public string? IsolationDeviceDescription { get; set; }  // Dispositivo
         public string? LockoutType { get; set; }                 // Bloqueio
 
+        public string ZeroEnergyVerification { get; set; } = string.Empty;
+        public string Test { get; set; } = string.Empty;
+
         // Já existiam
         public byte[]? ImageBytes { get; set; }
         public string? ShapeNotes { get; set; }

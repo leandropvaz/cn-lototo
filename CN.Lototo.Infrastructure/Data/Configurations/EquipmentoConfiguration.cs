@@ -54,6 +54,12 @@ namespace CN.Lototo.Infrastructure.Data.Configurations
             builder.Property(e => e.LockoutType)
                 .HasColumnType("nvarchar(max)")
                 .IsRequired(false);
+            builder.Property(e => e.ZeroEnergyVerification)
+                .HasColumnType("nvarchar(max)")
+                .IsRequired(false);
+            builder.Property(e => e.Test)
+                .HasColumnType("nvarchar(max)")
+                .IsRequired(false);
 
             // BLOBs
             builder.Property(e => e.SourceExcelBlobUrl)

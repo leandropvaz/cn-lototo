@@ -89,6 +89,8 @@ public class EquipamentoAppService : IEquipamentoAppService
                 IsolationDeviceLocation = row.IsolationDeviceLocation,
                 IsolationDeviceDescription = row.IsolationDeviceDescription,
                 LockoutType = row.LockoutType,
+                Test = row.Test,
+                ZeroEnergyVerification = row.ZeroEnergyVerification,
 
                 SourceExcelBlobUrl = excelUrl,
                 IsDeleted = false,
@@ -179,6 +181,8 @@ public class EquipamentoAppService : IEquipamentoAppService
             IsolationDeviceLocation = dto.IsolationDeviceLocation,
             IsolationDeviceDescription = dto.IsolationDeviceDescription,
             LockoutType = dto.LockoutType,
+            ZeroEnergyVerification = dto.ZeroEnergyVerification,
+            Test = dto.Test,
 
             ImageBlobUrl = imageUrl,
             ImageNotes = dto.ImageNotes,
@@ -211,6 +215,8 @@ public class EquipamentoAppService : IEquipamentoAppService
         entity.IsolationDeviceLocation = dto.IsolationDeviceLocation;
         entity.IsolationDeviceDescription = dto.IsolationDeviceDescription;
         entity.LockoutType = dto.LockoutType;
+        entity.Test = dto.Test;
+        entity.ZeroEnergyVerification = dto.ZeroEnergyVerification;
 
         entity.ImageNotes = dto.ImageNotes;
         entity.UpdatedAt = DateTime.UtcNow;
@@ -284,6 +290,8 @@ public class EquipamentoAppService : IEquipamentoAppService
         IsolationDeviceLocation = x.IsolationDeviceLocation,
         IsolationDeviceDescription = x.IsolationDeviceDescription,
         LockoutType = x.LockoutType,
+        ZeroEnergyVerification = x.ZeroEnergyVerification,
+        Test = x.Test,
 
         SourceExcelBlobUrl = x.SourceExcelBlobUrl,
         ImageBlobUrl = x.ImageBlobUrl,
